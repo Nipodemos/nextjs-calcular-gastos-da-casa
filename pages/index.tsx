@@ -7,21 +7,21 @@ import styles from '../styles/Home.module.css'
 const arrayDespesas = [
   { id: 1, valor: 400, descricao: 'pra comida' },
   { id: 2, valor: 400, descricao: 'pra carne' },
-  { id: 3, valor: 400, descricao: 'pra semana' },
+  { id: 3, valor: 520, descricao: 'pra semana' },
   { id: 4, valor: 100, descricao: 'pra conta de internet' },
-  { id: 5, valor: 400, descricao: 'cemig' },
-  { id: 6, valor: 65, descricao: 'pra copasa' },
+  { id: 5, valor: 160, descricao: 'cemig' },
+  { id: 6, valor: 130, descricao: 'pra copasa' },
 ];
 const arrayPessoas = [
   {
     nome: "Alan",
-    salario: 1805,
+    salario: 1964,
     alimentacao: 240,
     inss: 0.09,
   },
   {
     nome: "Thales",
-    salario: 1300,
+    salario: 1410,
     alimentacao: 240,
     inss: 0.09,
   },
