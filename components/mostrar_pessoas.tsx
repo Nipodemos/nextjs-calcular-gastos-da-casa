@@ -15,7 +15,7 @@ type pessoasType = {
 export default function MostrarPessoas({ pessoas, setPessoas }: propsType) {
 
   return (
-    <div style={{ width: '30vw', display: 'flex', flexDirection: 'column', alignContent: 'center' }} >
+    <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }} >
 
       <h1>Salários</h1>
       <ul>
