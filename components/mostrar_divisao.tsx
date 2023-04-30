@@ -22,6 +22,7 @@ type despesasType = {
 type valorPorPessoa = {
   nome: string;
   valor: number;
+  salario: number;
 }
 
 export default function MostrarDivisao({ despesas, pessoas }: propsType) {
@@ -50,19 +51,20 @@ export default function MostrarDivisao({ despesas, pessoas }: propsType) {
       console.log('porcentagem :>> ', porcentagem.toFixed(2));
       const valor = Number(totalDespesas * porcentagem)
       console.log('valor :>> ', valor);
-      return { nome: pessoa.nome, valor }
+      return { nome: pessoa.nome, valor, salario: pessoa.salario }
     }))
   }, [despesas, pessoas])
 
 
   return (
-    <div style={{ width: '30vw', display: 'flex', flexDirection: 'column', alignContent: 'center', alignItems: 'center' }} >
+    <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center', alignItems: 'center' }} >
       <h1>Divisão</h1>
       <ul>
         {valorPorPessoa.map(pessoa => (
           <li key={pessoa.nome}>
             <p>Nome: {pessoa.nome}</p>
             <p>Valor: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(pessoa.valor.toFixed(0)))}</p>
+            <p>Sobra: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number((pessoa.salario - pessoa.valor).toFixed(0)))}</p>
           </li>
         ))}
       </ul>
