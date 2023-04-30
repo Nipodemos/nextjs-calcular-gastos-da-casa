@@ -1,4 +1,5 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
+import { Button, Col, Modal, Row, Table } from "react-bootstrap";
 
 interface propsType {
   despesas: Array<despesasType>;
@@ -13,6 +14,11 @@ type despesasType = {
 
 export default function MostrarDespesas({ despesas, setDespesas }: propsType) {
 
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   const handleValueChange = (e: ChangeEvent<HTMLInputElement>, id: number) => {
     const newDespesas = despesas.map((despesa) => {
       if (despesa.id === id) {
@@ -22,6 +28,7 @@ export default function MostrarDespesas({ despesas, setDespesas }: propsType) {
     });
     setDespesas(newDespesas);
   };
+  const formatacao = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>, id: number) => {
     const newDespesas = despesas.map((despesa) => {
@@ -37,7 +44,7 @@ export default function MostrarDespesas({ despesas, setDespesas }: propsType) {
     <>
       <Row >
         <Col>
-      <h1>Despesas</h1>
+          <h1>Despesas</h1>
           <Button variant="success" style={{ marginBottom: '8px' }} onClick={() => setDespesas([...despesas, { id: despesas.length + 1, valor: 0, descricao: '' }])}>Adicionar Despesa</Button>
           <Table bordered>
             <thead>
@@ -57,10 +64,25 @@ export default function MostrarDespesas({ despesas, setDespesas }: propsType) {
                     <Button variant="danger" type="button" onClick={() => setDespesas(despesas.filter((despesaAtual) => despesaAtual.id !== id))}>Remover</Button>
                   </td>
                 </tr>
-        ))}
+              ))}
             </tbody>
           </Table>
         </Col>
       </Row>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Woohoo, you&apos;re reading this text in a modal!</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   )
 }
