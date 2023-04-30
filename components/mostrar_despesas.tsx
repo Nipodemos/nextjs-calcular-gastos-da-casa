@@ -34,18 +34,33 @@ export default function MostrarDespesas({ despesas, setDespesas }: propsType) {
   };
 
   return (
-    <div style={{ width: '30vw', display: 'flex', flexDirection: 'column', alignContent: 'center' }} >
+    <>
+      <Row >
+        <Col>
       <h1>Despesas</h1>
-      <ul>
-        {despesas.map(despesa => (
-          <li key={despesa.id}>
-            <input onChange={(event) => handleValueChange(event, despesa.id)} value={despesa.valor} />
-            <input onChange={(event) => handleDescriptionChange(event, despesa.id)} value={despesa.descricao} />
-            <button onClick={() => setDespesas(despesas.filter((despesaAtual) => despesaAtual.id !== despesa.id))}>Remover</button>
-          </li>
+          <Button variant="success" style={{ marginBottom: '8px' }} onClick={() => setDespesas([...despesas, { id: despesas.length + 1, valor: 0, descricao: '' }])}>Adicionar Despesa</Button>
+          <Table bordered>
+            <thead>
+              <tr>
+                <th>Valor</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {despesas.map(({ id, valor, descricao }) => (
+                <tr key={id}>
+                  <td>{formatacao.format(valor)}</td>
+                  <td>{descricao}</td>
+                  <td>
+                    <Button style={{ marginRight: '8px' }} onClick={handleShow} >Editar</Button>
+                    <Button variant="danger" type="button" onClick={() => setDespesas(despesas.filter((despesaAtual) => despesaAtual.id !== id))}>Remover</Button>
+                  </td>
+                </tr>
         ))}
-      </ul>
-      <button onClick={() => setDespesas([...despesas, { id: despesas.length + 1, valor: 0, descricao: '' }])}>Adicionar Despesa</button>
-    </div>
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
   )
 }
