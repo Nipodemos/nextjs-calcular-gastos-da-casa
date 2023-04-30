@@ -2,7 +2,9 @@ import { useState } from 'react'
 import MostrarDespesas from '../components/mostrar_despesas'
 import MostrarDivisao from '../components/mostrar_divisao'
 import MostrarPessoas from '../components/mostrar_pessoas'
-import styles from '../styles/Home.module.css'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 const arrayDespesas = [
   { id: 1, valor: 400, descricao: 'pra comida' },
@@ -37,10 +39,13 @@ export default function Home() {
   const [pessoas, setPessoas] = useState(arrayPessoas);
   const [despesas, setDespesas] = useState(arrayDespesas);
   return (
-    <div className={styles.container} >
-      <MostrarDespesas despesas={despesas} setDespesas={setDespesas} />
-      <MostrarDivisao despesas={despesas} pessoas={pessoas} />
-      <MostrarPessoas pessoas={pessoas} setPessoas={setPessoas} />
-    </div>
+    <Container fluid >
+      <Row >
+        <Col sm={6}><MostrarDespesas despesas={despesas} setDespesas={setDespesas} /></Col>
+        <Col sm={3}><MostrarDivisao despesas={despesas} pessoas={pessoas} /></Col>
+        <Col sm={3}><MostrarPessoas pessoas={pessoas} setPessoas={setPessoas} /></Col>
+
+      </Row>
+    </Container>
   )
 }
