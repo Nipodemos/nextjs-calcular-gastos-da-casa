@@ -9,7 +9,7 @@ const arrayDespesas = [
   { id: 2, valor: 400, descricao: 'pra carne' },
   { id: 3, valor: 520, descricao: 'pra semana' },
   { id: 4, valor: 100, descricao: 'pra conta de internet' },
-  { id: 5, valor: 160, descricao: 'cemig' },
+  { id: 5, valor: 200, descricao: 'cemig' },
   { id: 6, valor: 130, descricao: 'pra copasa' },
 ];
 const arrayPessoas = [
@@ -25,6 +25,12 @@ const arrayPessoas = [
     alimentacao: 240,
     inss: 0.09,
   },
+  {
+    nome: "Winer",
+    salario: 1320,
+    alimentacao: 202,
+    inss: 0.09,
+  }
 ]
 
 export default function Home() {
