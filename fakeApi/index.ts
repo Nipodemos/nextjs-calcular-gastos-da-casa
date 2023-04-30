@@ -1,6 +1,8 @@
 import fetchMock from "fetch-mock";
+//https://json.extendsclass.com/bin/83eeef7011ba
+//https://api.npoint.io/637995b191ff461f228c
 fetchMock.get(
-  "http://localhost:3000/",
+  "https://json.extendsclass.com/bin/83eeef7011ba",
   [
     {
       nome: "Alan",
