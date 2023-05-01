@@ -20,7 +20,7 @@ type despesasType = {
   descricao: string;
 }
 
-type jsonBinType = {
+export type jsonBinType = {
   pessoas: Array<pessoasType>;
   despesas: Array<despesasType>;
 }
@@ -82,7 +82,7 @@ export default function Home({ jsonBin }: { jsonBin: jsonBinType }) {
   return (
     <Container fluid >
       <Row >
-        <Col sm={6}><MostrarDespesas despesas={despesas} setDespesas={setDespesas} /></Col>
+        <Col sm={6}><MostrarDespesas jsonBin={jsonBin} despesas={despesas} setDespesas={setDespesas} /></Col>
         <Col sm={3}><MostrarDivisao despesas={despesas} pessoas={pessoas} /></Col>
         <Col sm={3}><MostrarPessoas pessoas={pessoas} setPessoas={setPessoas} /></Col>
       </Row>

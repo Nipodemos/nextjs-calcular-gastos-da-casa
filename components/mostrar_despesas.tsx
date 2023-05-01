@@ -1,9 +1,12 @@
-import { useState } from "react";
-import { Button, Col, Form, Modal, Row, Table } from "react-bootstrap";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Button, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import { compare, deepClone } from 'fast-json-patch';
+import { jsonBinType } from "../pages";
 
 interface propsType {
   despesas: Array<despesasType>;
-  setDespesas: Function;
+  setDespesas: Dispatch<SetStateAction<despesasType[]>>;
+  jsonBin: jsonBinType;
 }
 
 type despesasType = {
@@ -18,8 +21,9 @@ type FormDataType = {
   descricao: string;
 }
 
-export default function MostrarDespesas({ despesas, setDespesas }: propsType) {
+export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: propsType) {
   const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormDataType>({
     id: null,
     valor: 0,
@@ -39,17 +43,51 @@ export default function MostrarDespesas({ despesas, setDespesas }: propsType) {
     }
     setShow(true)
   };
-  const handleSave = () => {
+  const handleSave = async () => {
+    setIsLoading(true);
     if (formData.id === null) {
-      setDespesas([...despesas, { ...formData, id: despesas.length + 1, }])
+      const newDespesas = deepClone(despesas);
+      const id = Math.floor(Math.random() * Date.now())
+      newDespesas.push({ ...formData, id });
+      let newJsonBin = deepClone(jsonBin);
+      newJsonBin.despesas = [...newDespesas];
+
+      const patch = compare(jsonBin, newJsonBin);
+      const res = await fetch('https://json.extendsclass.com/bin/83eeef7011ba', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json-patch+json',
+          'Security-key': '33561820'
+        },
+        body: JSON.stringify(patch)
+      })
+      const response = await res.json()
+      console.log('response :>> ', response);
+      alert(JSON.stringify(response, null, 2))
+      setDespesas(newDespesas)
     } else {
-      setDespesas(despesas.map((despesa) => {
-        if (despesa.id === formData.id) {
-          return { ...despesa, ...formData }
+      setDespesas((prevValue) => {
+        const despesaIndex = prevValue.findIndex((despesa) => despesa.id === formData.id);
+        if (despesaIndex === -1) {
+          throw new Error("Despesa não encontrada");
         }
-        return despesa
-      }))
+        const newDespesas = [...prevValue];
+        const id = formData.id;
+        if (id === null) {
+          throw new Error("Id não encontrado");
+        }
+        newDespesas[despesaIndex] = { ...formData, id };
+        let newJsonBin = deepClone(jsonBin);
+        newJsonBin.despesas = [...newDespesas];
+
+        const patch = compare(jsonBin, newJsonBin);
+
+        alert(JSON.stringify(patch, null, 2));
+
+        return newDespesas;
+      });
     }
+    setIsLoading(false);
     setShow(false)
   }
 
@@ -107,8 +145,20 @@ export default function MostrarDespesas({ despesas, setDespesas }: propsType) {
           <Button variant="secondary" onClick={handleClose}>
             Fechar
           </Button>
-          <Button variant="primary" onClick={handleSave}>
-            Gravar
+          <Button disabled={isLoading} variant="primary" onClick={handleSave}>
+            {isLoading ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+                Gravando...
+              </>
+            ) : 'Gravar'}
+
           </Button>
         </Modal.Footer>
       </Modal>
