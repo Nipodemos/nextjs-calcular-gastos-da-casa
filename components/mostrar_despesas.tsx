@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Col, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
+import { Button, Col, Form, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
 import { compare, deepClone } from 'fast-json-patch';
 import { jsonBinType } from "../pages";
 
@@ -22,15 +22,17 @@ type FormDataType = {
 }
 
 export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: propsType) {
-  const [show, setShow] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<number | null>(null);
+  const [showToastSuccess, setShowToastSuccess] = useState(false);
   const [formData, setFormData] = useState<FormDataType>({
     id: null,
     valor: 0,
     descricao: ''
   });
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => setShowModal(false);
   const handleShow = (id: number | null) => {
     if (id) {
       const despesa = despesas.find((despesa) => despesa.id === id);
@@ -41,54 +43,76 @@ export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: prop
     } else {
       setFormData({ id: null, valor: 0, descricao: '' })
     }
-    setShow(true)
+    setShowModal(true)
   };
   const handleSave = async () => {
     setIsLoading(true);
+    const newDespesas = deepClone(despesas);
     if (formData.id === null) {
-      const newDespesas = deepClone(despesas);
       const id = Math.floor(Math.random() * Date.now())
       newDespesas.push({ ...formData, id });
-      let newJsonBin = deepClone(jsonBin);
-      newJsonBin.despesas = [...newDespesas];
-
-      const patch = compare(jsonBin, newJsonBin);
-      const res = await fetch('https://json.extendsclass.com/bin/83eeef7011ba', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json-patch+json',
-          'Security-key': '33561820'
-        },
-        body: JSON.stringify(patch)
-      })
-      const response = await res.json()
-      console.log('response :>> ', response);
-      alert(JSON.stringify(response, null, 2))
-      setDespesas(newDespesas)
     } else {
-      setDespesas((prevValue) => {
-        const despesaIndex = prevValue.findIndex((despesa) => despesa.id === formData.id);
-        if (despesaIndex === -1) {
-          throw new Error("Despesa não encontrada");
-        }
-        const newDespesas = [...prevValue];
-        const id = formData.id;
-        if (id === null) {
-          throw new Error("Id não encontrado");
-        }
-        newDespesas[despesaIndex] = { ...formData, id };
-        let newJsonBin = deepClone(jsonBin);
-        newJsonBin.despesas = [...newDespesas];
+      const despesaIndex = despesas.findIndex((despesa) => despesa.id === formData.id);
+      if (despesaIndex === -1) {
+        throw new Error("Despesa não encontrada");
+      }
+      const id = formData.id;
+      if (id === null) {
+        alert('Erro ao salvar despesa. Id não encontrado')
+        setIsLoading(false);
+        return;
+      }
+      newDespesas[despesaIndex] = { ...formData, id };
 
-        const patch = compare(jsonBin, newJsonBin);
-
-        alert(JSON.stringify(patch, null, 2));
-
-        return newDespesas;
-      });
+    }
+    let newJsonBin = deepClone(jsonBin);
+    newJsonBin.despesas = [...newDespesas];
+    const patch = compare(jsonBin, newJsonBin);
+    const res = await fetch('https://json.extendsclass.com/bin/83eeef7011ba', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json-patch+json',
+        'Security-key': '33561820'
+      },
+      body: JSON.stringify(patch)
+    })
+    const response = await res.json()
+    console.log('response :>> ', response);
+    if (!res.ok) {
+      alert('Erro ao salvar despesa')
+    }
+    else {
+      setDespesas(newDespesas)
+      setShowModal(false)
+      setShowToastSuccess(true)
     }
     setIsLoading(false);
-    setShow(false)
+  }
+
+  const handleDelete = async (id: number) => {
+    setIsDeleting(id);
+    const newDespesas = despesas.filter((despesa) => despesa.id !== id);
+    let newJsonBin = deepClone(jsonBin);
+    newJsonBin.despesas = [...newDespesas];
+    const patch = compare(jsonBin, newJsonBin);
+    const res = await fetch('https://json.extendsclass.com/bin/83eeef7011ba', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json-patch+json',
+        'Security-key': '33561820'
+      },
+      body: JSON.stringify(patch)
+    })
+    const response = await res.json()
+    console.log('response :>> ', response);
+    if (!res.ok) {
+      alert('Erro ao excluir despesa')
+    }
+    else {
+      setDespesas(newDespesas)
+      setShowToastSuccess(true)
+    }
+    setIsLoading(false);
   }
 
   const formatacao = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -114,7 +138,20 @@ export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: prop
                   <td>{descricao}</td>
                   <td>
                     <Button style={{ marginRight: '8px' }} onClick={() => handleShow(id)} >Editar</Button>
-                    <Button variant="danger" type="button" onClick={() => setDespesas(despesas.filter((despesaAtual) => despesaAtual.id !== id))}>Remover</Button>
+                    <Button variant="danger" type="button" disabled={isDeleting === id} onClick={() => handleDelete(id)}>
+                      {isDeleting === id ? (
+                        <>
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                          Excluindo...
+                        </>
+                      ) : 'Excluir'}
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -122,7 +159,7 @@ export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: prop
           </Table>
         </Col>
       </Row>
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>{formData.id === null ? "Nova Despesa" : "Alterar Despesa"}</Modal.Title>
         </Modal.Header>
@@ -162,6 +199,14 @@ export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: prop
           </Button>
         </Modal.Footer>
       </Modal>
+      <ToastContainer position="top-end" className="p-3" style={{ zIndex: 1 }}>
+        <Toast bg='success' onClose={() => setShowToastSuccess(false)} show={showToastSuccess} delay={7000} autohide >
+          <Toast.Header>
+            <strong className="me-auto">Sucesso!</strong>
+          </Toast.Header>
+          <Toast.Body>Informações foram gravadas</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </>
   )
 }
