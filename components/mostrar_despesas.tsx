@@ -6,7 +6,8 @@ import { jsonBinType } from "../pages";
 interface propsType {
   despesas: Array<despesasType>;
   setDespesas: Dispatch<SetStateAction<despesasType[]>>;
-  jsonBin: jsonBinType;
+  setJsonBinInteiro: Dispatch<SetStateAction<jsonBinType>>;
+  jsonBinInteiro: jsonBinType;
 }
 
 type despesasType = {
@@ -21,7 +22,7 @@ type FormDataType = {
   descricao: string;
 }
 
-export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: propsType) {
+export default function MostrarDespesas({ despesas, setDespesas, jsonBinInteiro, setJsonBinInteiro }: propsType) {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
@@ -65,9 +66,9 @@ export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: prop
       newDespesas[despesaIndex] = { ...formData, id };
 
     }
-    let newJsonBin = deepClone(jsonBin);
+    let newJsonBin = deepClone(jsonBinInteiro);
     newJsonBin.despesas = [...newDespesas];
-    const patch = compare(jsonBin, newJsonBin);
+    const patch = compare(jsonBinInteiro, newJsonBin);
     const res = await fetch('https://json.extendsclass.com/bin/83eeef7011ba', {
       method: 'PATCH',
       headers: {
@@ -82,19 +83,21 @@ export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: prop
       alert('Erro ao salvar despesa')
     }
     else {
+      setJsonBinInteiro(response)
       setDespesas(newDespesas)
       setShowModal(false)
       setShowToastSuccess(true)
     }
     setIsLoading(false);
+    setFormData({ id: null, valor: 0, descricao: '' })
   }
 
   const handleDelete = async (id: number) => {
     setIsDeleting(id);
     const newDespesas = despesas.filter((despesa) => despesa.id !== id);
-    let newJsonBin = deepClone(jsonBin);
+    let newJsonBin = deepClone(jsonBinInteiro);
     newJsonBin.despesas = [...newDespesas];
-    const patch = compare(jsonBin, newJsonBin);
+    const patch = compare(jsonBinInteiro, newJsonBin);
     const res = await fetch('https://json.extendsclass.com/bin/83eeef7011ba', {
       method: 'PATCH',
       headers: {
@@ -109,6 +112,7 @@ export default function MostrarDespesas({ despesas, setDespesas, jsonBin }: prop
       alert('Erro ao excluir despesa')
     }
     else {
+      setJsonBinInteiro(response)
       setDespesas(newDespesas)
       setShowToastSuccess(true)
     }

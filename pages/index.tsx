@@ -74,6 +74,7 @@ const arrayPessoas = [
 
 export default function Home({ jsonBin }: { jsonBin: jsonBinType }) {
   console.log('jsonBin :>> ', jsonBin);
+  const [jsonBinInteiro, setJsonBinInteiro] = useState<jsonBinType>(jsonBin); // [jsonBin, setJsonBin
   const [pessoas, setPessoas] = useState(jsonBin.pessoas);
   const [despesas, setDespesas] = useState(jsonBin.despesas);
   if (!jsonBin.pessoas) {
@@ -82,7 +83,7 @@ export default function Home({ jsonBin }: { jsonBin: jsonBinType }) {
   return (
     <Container fluid >
       <Row >
-        <Col sm={6}><MostrarDespesas jsonBin={jsonBin} despesas={despesas} setDespesas={setDespesas} /></Col>
+        <Col sm={6}><MostrarDespesas jsonBinInteiro={jsonBinInteiro} setJsonBinInteiro={setJsonBinInteiro} despesas={despesas} setDespesas={setDespesas} /></Col>
         <Col sm={3}><MostrarDivisao despesas={despesas} pessoas={pessoas} /></Col>
         <Col sm={3}><MostrarPessoas pessoas={pessoas} setPessoas={setPessoas} /></Col>
       </Row>
