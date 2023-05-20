@@ -4,15 +4,18 @@ dependencies:
   bootstrap:
     specifier: ^5.2.3
     version: 5.2.3(@popperjs/core@2.11.7)
+  dotenv:
+    specifier: ^16.0.3
+    version: 16.0.3
   eslint:
     specifier: 8.27.0
     version: 8.27.0
   eslint-config-next:
     specifier: 13.0.3
     version: 13.0.3(eslint@8.27.0)(typescript@4.8.4)
-  fast-json-patch:
-    specifier: ^3.1.1
-    version: 3.1.1
+  immer:
+    specifier: ^10.0.2
+    version: 10.0.2
   next:
     specifier: 13.0.3
     version: 13.0.3(react-dom@18.2.0)(react@18.2.0)
@@ -28,6 +31,9 @@ dependencies:
   typescript:
     specifier: 4.8.4
     version: 4.8.4
+  zustand:
+    specifier: ^4.3.8
+    version: 4.3.8(immer@10.0.2)(react@18.2.0)
 
 devDependencies:
   '@types/node':
@@ -683,6 +689,11 @@ packages:
       csstype: 3.1.1
     dev: false
 
+  /dotenv@16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+    dev: false
+
   /emoji-regex@9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
     dev: false
@@ -1028,10 +1039,6 @@ packages:
       micromatch: 4.0.5
     dev: false
 
-  /fast-json-patch@3.1.1:
-    resolution: {integrity: sha512-vf6IHUX2SBcA+5/+4883dsIjpBTqmfBjmYiWK1savxQmFk4JfBMLa7ynTYOs1Rolp/T1betJxHiGD3g1Mn8lUQ==}
-    dev: false
-
   /fast-json-stable-stringify@2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
     dev: false
@@ -1214,6 +1221,10 @@ packages:
   /ignore@5.2.0:
     resolution: {integrity: sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ==}
     engines: {node: '>= 4'}
+    dev: false
+
+  /immer@10.0.2:
+    resolution: {integrity: sha512-Rx3CqeqQ19sxUtYV9CU911Vhy8/721wRFnJv3REVGWUmoAcIwzifTsdmJte/MV+0/XpM35LZdQMBGkRIoLPwQA==}
     dev: false
 
   /import-fresh@3.3.0:
@@ -2093,4 +2104,21 @@ packages:
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+    dev: false
+
+  /zustand@4.3.8(immer@10.0.2)(react@18.2.0):
+    resolution: {integrity: sha512-4h28KCkHg5ii/wcFFJ5Fp+k1J3gJoasaIbppdgZFO4BPJnsNxL0mQXBSFgOgAdCdBj35aDTPvdAJReTMntFPGg==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      immer: '>=9.0'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      immer: 10.0.2
+      react: 18.2.0
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
