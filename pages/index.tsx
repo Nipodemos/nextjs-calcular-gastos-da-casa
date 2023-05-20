@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import MostrarDespesas from '../components/mostrar_despesas'
 import MostrarDivisao from '../components/mostrar_divisao'
 import MostrarPessoas from '../components/mostrar_pessoas'
@@ -66,7 +66,14 @@ const arrayPessoas = [
 */
 
 export default function Home({ jsonBin }: { jsonBin: jsonBinType }) {
-  console.log('jsonBin :>> ', jsonBin);
+  const popularDespesas = mainStore((state) => state.popularDespesas);
+  const popularPessoas = mainStore((state) => state.popularPessoas);
+  useEffect(() => {
+    console.log('jsonBin :>> ', jsonBin);
+    popularDespesas(jsonBin.despesas);
+    popularPessoas(jsonBin.pessoas);
+  }, [jsonBin, popularDespesas, popularPessoas])
+
   if (!jsonBin.pessoas) {
     return <div>Tem algo errado</div>
   }

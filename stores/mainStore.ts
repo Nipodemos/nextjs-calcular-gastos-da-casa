@@ -24,6 +24,8 @@ interface ImainStore {
     descricao: string
   ) => Promise<boolean>;
   removerDespesa: (id: number) => Promise<boolean>;
+  popularPessoas: (pessoas: IPessoa[]) => void;
+  popularDespesas: (despesas: IDespesa[]) => void;
 }
 
 export const mainStore = create(
@@ -36,7 +38,7 @@ export const mainStore = create(
       set((state) => {
         state.despesas.push(newDespesa);
       });
-      return atualizarApiBin(get().pessoas, get().despesas);
+      return await atualizarApiBin(get().pessoas, get().despesas);
     },
     alterarDespesa: async (id: number, valor: number, descricao: string) => {
       set((state) => {
@@ -44,14 +46,24 @@ export const mainStore = create(
         state.despesas[index].valor = valor;
         state.despesas[index].descricao = descricao;
       });
-      return atualizarApiBin(get().pessoas, get().despesas);
+      return await atualizarApiBin(get().pessoas, get().despesas);
     },
     removerDespesa: async (id: number) => {
       set((state) => {
         const index = state.despesas.findIndex((d) => d.id === id);
         state.despesas.splice(index, 1);
       });
-      return atualizarApiBin(get().pessoas, get().despesas);
+      return await atualizarApiBin(get().pessoas, get().despesas);
+    },
+    popularPessoas: (pessoas: IPessoa[]) => {
+      set((state) => {
+        state.pessoas = pessoas;
+      });
+    },
+    popularDespesas: (despesas: IDespesa[]) => {
+      set((state) => {
+        state.despesas = despesas;
+      });
     },
   }))
 );
