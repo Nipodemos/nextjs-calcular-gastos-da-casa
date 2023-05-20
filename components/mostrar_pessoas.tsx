@@ -1,19 +1,8 @@
-import { useEffect, useState } from "react";
+import { mainStore } from "../stores/mainStore";
 
-interface propsType {
-  pessoas: Array<pessoasType>;
-  setPessoas: Function;
-}
 
-type pessoasType = {
-  nome: string;
-  salario: number;
-  alimentacao: number;
-  inss: number;
-}
-
-export default function MostrarPessoas({ pessoas, setPessoas }: propsType) {
-
+export default function MostrarPessoas() {
+  const pessoas = mainStore((state) => state.pessoas)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }} >
 
@@ -33,7 +22,6 @@ export default function MostrarPessoas({ pessoas, setPessoas }: propsType) {
           )
         })}
       </ul>
-
     </div>
   )
 }

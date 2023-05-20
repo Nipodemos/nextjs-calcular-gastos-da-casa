@@ -1,23 +1,5 @@
 import { use, useEffect, useState } from "react"
-
-interface propsType {
-  despesas: Array<despesasType>;
-  pessoas: Array<pessoasType>;
-}
-
-
-type pessoasType = {
-  nome: string;
-  salario: number;
-  alimentacao: number;
-  inss: number;
-}
-
-type despesasType = {
-  id: number;
-  valor: number;
-  descricao: string;
-}
+import { mainStore } from "../stores/mainStore";
 
 type valorPorPessoa = {
   nome: string;
@@ -25,12 +7,12 @@ type valorPorPessoa = {
   salario: number;
 }
 
-export default function MostrarDivisao({ despesas, pessoas }: propsType) {
+export default function MostrarDivisao() {
+  const despesas = mainStore((state) => state.despesas)
+  const pessoas = mainStore((state) => state.pessoas)
   const [valorPorPessoa, setValorPorPessoa] = useState<Array<valorPorPessoa>>([]);
 
   useEffect(() => {
-    console.log('despesas', despesas)
-    console.log('pessoas', pessoas)
 
     const totalDespesas = despesas.reduce((acc, despesa) => {
       return acc + despesa.valor

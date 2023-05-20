@@ -6,31 +6,24 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { GetServerSideProps } from 'next'
-
-type pessoasType = {
-  nome: string;
-  salario: number;
-  alimentacao: number;
-  inss: number;
-}
-
-type despesasType = {
-  id: number;
-  valor: number;
-  descricao: string;
-}
+import { IPessoa, IDespesa, mainStore } from '../stores/mainStore'
 
 export type jsonBinType = {
-  pessoas: Array<pessoasType>;
-  despesas: Array<despesasType>;
+  pessoas: Array<IPessoa>;
+  despesas: Array<IDespesa>;
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch('https://json.extendsclass.com/bin/83eeef7011ba', {
+  const apiPassword = process.env.API_PASSWORD;
+  const apiBinKey = process.env.API_BIN_KEY;
+  if (!apiPassword || !apiBinKey) {
+    throw new Error("API_PASSWORD ou API_BIN_KEY não definidos");
+  }
+  const res = await fetch('https://json.extendsclass.com/bin/' + apiBinKey, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Security-key': '33561820'
+      'Security-key': apiPassword
     }
   })
   const jsonBin: jsonBinType = await res.json()
@@ -74,18 +67,15 @@ const arrayPessoas = [
 
 export default function Home({ jsonBin }: { jsonBin: jsonBinType }) {
   console.log('jsonBin :>> ', jsonBin);
-  const [jsonBinInteiro, setJsonBinInteiro] = useState<jsonBinType>(jsonBin); // [jsonBin, setJsonBin
-  const [pessoas, setPessoas] = useState(jsonBin.pessoas);
-  const [despesas, setDespesas] = useState(jsonBin.despesas);
   if (!jsonBin.pessoas) {
     return <div>Tem algo errado</div>
   }
   return (
     <Container fluid >
       <Row >
-        <Col sm={6}><MostrarDespesas jsonBinInteiro={jsonBinInteiro} setJsonBinInteiro={setJsonBinInteiro} despesas={despesas} setDespesas={setDespesas} /></Col>
-        <Col sm={3}><MostrarDivisao despesas={despesas} pessoas={pessoas} /></Col>
-        <Col sm={3}><MostrarPessoas pessoas={pessoas} setPessoas={setPessoas} /></Col>
+        <Col sm={6}><MostrarDespesas /></Col>
+        <Col sm={3}><MostrarDivisao /></Col>
+        <Col sm={3}><MostrarPessoas /></Col>
       </Row>
     </Container>
   )
