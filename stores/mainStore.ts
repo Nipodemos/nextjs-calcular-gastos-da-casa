@@ -28,6 +28,11 @@ interface ImainStore {
   popularDespesas: (despesas: IDespesa[]) => void;
 }
 
+interface ResApi {
+  success: boolean;
+  error?: string;
+}
+
 export const mainStore = create(
   immer<ImainStore>((set, get) => ({
     pessoas: [],
@@ -38,22 +43,51 @@ export const mainStore = create(
       set((state) => {
         state.despesas.push(newDespesa);
       });
-      return await atualizarApiBin(get().pessoas, get().despesas);
+      let resApi: ResApi = await atualizarApiBin(get().pessoas, get().despesas);
+      if (resApi.success === false) {
+        set((state) => {
+          state.despesas.pop();
+        });
+        return false;
+      }
+      return true;
     },
     alterarDespesa: async (id: number, valor: number, descricao: string) => {
+      let valorOriginal: number;
+      let descricaoOriginal: string;
       set((state) => {
         const index = state.despesas.findIndex((d) => d.id === id);
+        valorOriginal = state.despesas[index].valor;
+        descricaoOriginal = state.despesas[index].descricao;
         state.despesas[index].valor = valor;
         state.despesas[index].descricao = descricao;
       });
-      return await atualizarApiBin(get().pessoas, get().despesas);
+      let resApi: ResApi = await atualizarApiBin(get().pessoas, get().despesas);
+      if (resApi.success === false) {
+        set((state) => {
+          const index = state.despesas.findIndex((d) => d.id === id);
+          state.despesas[index].valor = valorOriginal;
+          state.despesas[index].descricao = descricaoOriginal;
+        });
+        return false;
+      }
+      return true;
     },
     removerDespesa: async (id: number) => {
+      let despesaRemovida: IDespesa;
       set((state) => {
         const index = state.despesas.findIndex((d) => d.id === id);
+        despesaRemovida = state.despesas[index];
         state.despesas.splice(index, 1);
       });
-      return await atualizarApiBin(get().pessoas, get().despesas);
+      let resApi: ResApi = await atualizarApiBin(get().pessoas, get().despesas);
+      if (resApi.success === false) {
+        set((state) => {
+          state.despesas.push(despesaRemovida);
+        });
+        return false;
+      }
+      return true;
     },
     popularPessoas: (pessoas: IPessoa[]) => {
       set((state) => {
