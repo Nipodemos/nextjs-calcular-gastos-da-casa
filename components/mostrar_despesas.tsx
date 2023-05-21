@@ -53,9 +53,9 @@ export default function MostrarDespesas() {
     else {
       setShowModal(false)
       setShowToastSuccess(true)
+      setFormData({ id: null, valor: 0, descricao: '' })
     }
     setIsLoading(false);
-    setFormData({ id: null, valor: 0, descricao: '' })
   }
 
   const handleDelete = async (id: number) => {
