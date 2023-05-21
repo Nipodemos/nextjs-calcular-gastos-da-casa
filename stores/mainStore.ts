@@ -68,31 +68,16 @@ export const mainStore = create(
   }))
 );
 
-interface IAtualizarApiBin {
-  (pessoas: IPessoa[], despesas: IDespesa[]): Promise<boolean>;
-}
-
-const atualizarApiBin: IAtualizarApiBin = async (pessoas, despesas) => {
-  const apiPassword = process.env.API_PASSWORD;
-  const apiBinKey = process.env.API_BIN_KEY;
-  if (!apiPassword || !apiBinKey) {
-    throw new Error("API_PASSWORD ou API_BIN_KEY não definidos");
-  }
-  let completeData = {
-    pessoas,
-    despesas,
-  };
-  const res = await fetch("https://json.extendsclass.com/bin/apiBinKey", {
+const atualizarApiBin = async (pessoas: IPessoa[], despesas: IDespesa[]) => {
+  const resultado = await fetch("/api/atualizar_json_storage", {
     method: "PUT",
     headers: {
-      "Security-key": apiPassword,
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(completeData),
+    body: JSON.stringify({
+      pessoas,
+      despesas,
+    }),
   });
-  const response = await res.json();
-  console.log("response :>> ", response);
-  if (!res.ok) {
-    return false;
-  }
-  return true;
+  return await resultado.json();
 };
