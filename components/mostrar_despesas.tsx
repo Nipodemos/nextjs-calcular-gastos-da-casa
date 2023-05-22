@@ -74,46 +74,42 @@ export default function MostrarDespesas() {
 
   return (
     <>
-      <Row >
-        <Col>
-          <h1>Despesas</h1>
-          <Button variant="success" style={{ marginBottom: '8px' }} onClick={() => handleShow(null)}>Adicionar Despesa</Button>
-          <Table bordered>
-            <thead>
-              <tr>
-                <th>Valor</th>
-                <th>Descrição</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {despesas.map(({ id, valor, descricao }) => (
-                <tr key={id}>
-                  <td>{formatacao.format(valor)}</td>
-                  <td>{descricao}</td>
-                  <td>
-                    <Button style={{ marginRight: '8px' }} onClick={() => handleShow(id)} >Editar</Button>
-                    <Button variant="danger" type="button" disabled={isDeleting === id} onClick={() => handleDelete(id)}>
-                      {isDeleting === id ? (
-                        <>
-                          <Spinner
-                            as="span"
-                            animation="grow"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                          />
-                          Excluindo...
-                        </>
-                      ) : 'Excluir'}
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
+      <h1>Despesas</h1>
+      <Button variant="success" style={{ marginBottom: '8px' }} onClick={() => handleShow(null)}>Adicionar Despesa</Button>
+      <Table bordered>
+        <thead>
+          <tr>
+            <th>Valor</th>
+            <th>Descrição</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {despesas.map(({ id, valor, descricao }) => (
+            <tr key={id}>
+              <td>{formatacao.format(valor)}</td>
+              <td>{descricao}</td>
+              <td>
+                <Button style={{ marginRight: '8px' }} onClick={() => handleShow(id)} >Editar</Button>
+                <Button variant="danger" type="button" disabled={isDeleting === id} onClick={() => handleDelete(id)}>
+                  {isDeleting === id ? (
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="grow"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                      />
+                      Excluindo...
+                    </>
+                  ) : 'Excluir'}
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>{formData.id === null ? "Nova Despesa" : "Alterar Despesa"}</Modal.Title>

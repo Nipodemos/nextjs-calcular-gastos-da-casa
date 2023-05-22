@@ -80,9 +80,13 @@ export default function Home({ jsonBin }: { jsonBin: jsonBinType }) {
   return (
     <Container fluid >
       <Row >
-        <Col sm={6}><MostrarDespesas /></Col>
-        <Col sm={3}><MostrarDivisao /></Col>
-        <Col sm={3}><MostrarPessoas /></Col>
+        <Col sm={12} md={6}><MostrarDespesas /></Col>
+        <Col sm={12} md={6}>
+          <Row>
+            <Col style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} sm={12} md={6}><MostrarDivisao /></Col>
+            <Col style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} sm={12} md={6}><MostrarPessoas /></Col>
+          </Row>
+        </Col>
       </Row>
     </Container>
   )

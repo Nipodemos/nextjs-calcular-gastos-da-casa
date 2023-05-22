@@ -1,5 +1,6 @@
 import { use, useEffect, useState } from "react"
 import { mainStore } from "../stores/mainStore";
+import { Card, ListGroup } from "react-bootstrap";
 
 type valorPorPessoa = {
   nome: string;
@@ -39,17 +40,20 @@ export default function MostrarDivisao() {
 
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center', alignItems: 'center' }} >
-      <h1>Divisão</h1>
-      <ul>
-        {valorPorPessoa.map(pessoa => (
-          <li key={pessoa.nome}>
-            <p>Nome: {pessoa.nome}</p>
-            <p>Valor: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(pessoa.valor.toFixed(0)))}</p>
-            <p>Sobra: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number((pessoa.salario - pessoa.valor).toFixed(0)))}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <h1 className="mb-5">Divisão</h1>
+      {valorPorPessoa.map(pessoa =>
+        <Card className="mb-3" key={pessoa.nome} style={{ width: '15rem' }}>
+          <Card.Body>
+            <Card.Title>{pessoa.nome}</Card.Title>
+          </Card.Body>
+          <ListGroup className="list-group-flush">
+            <ListGroup.Item>Valor: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(pessoa.valor.toFixed(0)))}</ListGroup.Item>
+            <ListGroup.Item>Sobra: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number((pessoa.salario - pessoa.valor).toFixed(0)))}</ListGroup.Item>
+          </ListGroup>
+
+        </Card>
+      )}
+    </>
   )
 }
