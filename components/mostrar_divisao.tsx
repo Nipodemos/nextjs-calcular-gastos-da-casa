@@ -20,12 +20,12 @@ export default function MostrarDivisao() {
     }, 0)
 
     const totalReceitas = pessoas.reduce((acc, pessoa) => {
-      return acc + pessoa.salario - (pessoa.salario * pessoa.inss) - (pessoa.salario * 0.06) + pessoa.alimentacao
+      return acc + pessoa.salario - (pessoa.salario * pessoa.inss - 19.80) - (pessoa.salario * 0.06) + pessoa.alimentacao
     }, 0)
 
 
     setValorPorPessoa(pessoas.map(pessoa => {
-      const receitaPessoa = pessoa.salario - (pessoa.salario * pessoa.inss) - (pessoa.salario * 0.06) + pessoa.alimentacao
+      const receitaPessoa = pessoa.salario - (pessoa.salario * pessoa.inss - 19.80) - (pessoa.salario * 0.06) + pessoa.alimentacao
       const porcentagem = receitaPessoa / totalReceitas
       console.log('\n\n\n---\npessoa.nome :>> ', pessoa.nome);
       console.log('totalDespesas :>> ', totalDespesas);
@@ -34,7 +34,7 @@ export default function MostrarDivisao() {
       console.log('porcentagem :>> ', porcentagem.toFixed(2));
       const valor = Number(totalDespesas * porcentagem)
       console.log('valor :>> ', valor);
-      return { nome: pessoa.nome, valor, salario: pessoa.salario }
+      return { nome: pessoa.nome, valor, salario: pessoa.salario, receita: receitaPessoa }
     }))
   }, [despesas, pessoas])
 
