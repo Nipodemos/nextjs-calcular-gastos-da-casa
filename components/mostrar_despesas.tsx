@@ -67,6 +67,7 @@ export default function MostrarDespesas() {
     else {
       setShowToastSuccess(true)
     }
+    setIsDeleting(null);
     setIsLoading(false);
   }
 
