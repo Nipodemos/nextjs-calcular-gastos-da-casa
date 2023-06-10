@@ -4,6 +4,9 @@ dependencies:
   bootstrap:
     specifier: ^5.2.3
     version: 5.2.3(@popperjs/core@2.11.7)
+  derive-zustand:
+    specifier: ^0.0.1
+    version: 0.0.1(zustand@4.3.8)
   dotenv:
     specifier: ^16.0.3
     version: 16.0.3
@@ -16,6 +19,9 @@ dependencies:
   immer:
     specifier: ^10.0.2
     version: 10.0.2
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   next:
     specifier: 13.0.3
     version: 13.0.3(react-dom@18.2.0)(react@18.2.0)
@@ -36,6 +42,9 @@ dependencies:
     version: 4.3.8(immer@10.0.2)(react@18.2.0)
 
 devDependencies:
+  '@types/lodash':
+    specifier: ^4.14.195
+    version: 4.14.195
   '@types/node':
     specifier: 18.11.9
     version: 18.11.9
@@ -318,6 +327,10 @@ packages:
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: false
+
+  /@types/lodash@4.14.195:
+    resolution: {integrity: sha512-Hwx9EUgdwf2GLarOjQp5ZH8ZmblzcbTBC2wtQWNKARBSxM9ezRIAUpeDTgoQRAFB0+8CNWXVA9+MaSOzOF3nPg==}
+    dev: true
 
   /@types/node@18.11.9:
     resolution: {integrity: sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==}
@@ -659,6 +672,14 @@ packages:
   /dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
+    dev: false
+
+  /derive-zustand@0.0.1(zustand@4.3.8):
+    resolution: {integrity: sha512-sqMq6Wk2E4uV/P7bK1e0qUMv7fv8nDyBwH2fPDJcnIDKj+PlhqKcyxq9AhsyFcKC5e2n+LD9geoRlOieTdbtqg==}
+    peerDependencies:
+      zustand: '>=4.1.0'
+    dependencies:
+      zustand: 4.3.8(immer@10.0.2)(react@18.2.0)
     dev: false
 
   /dir-glob@3.0.1:
@@ -1435,6 +1456,10 @@ packages:
 
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: false
+
+  /lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: false
 
   /loose-envify@1.4.0:
