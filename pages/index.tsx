@@ -6,7 +6,7 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { GetServerSideProps } from 'next'
-import { IPessoa, IDespesa, mainStore } from '../stores/mainStore'
+import { IPessoa, IDespesa, mainStore } from '../stores/pessoa_e_despesa'
 
 export type jsonBinType = {
   pessoas: Array<IPessoa>;

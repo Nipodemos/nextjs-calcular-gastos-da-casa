@@ -1,5 +1,5 @@
 import { Card, ListGroup } from "react-bootstrap";
-import { mainStore } from "../stores/mainStore";
+import { mainStore } from "../stores/pessoa_e_despesa";
 
 
 export default function MostrarPessoas() {
