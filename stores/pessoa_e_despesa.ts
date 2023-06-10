@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import cloneDeep from "lodash/cloneDeep";
 
 export interface IPessoa {
   nome: string;
   salario: number;
   alimentacao: number;
-  inss: number;
+  inssPorcentagem: number;
 }
 
 export interface IDespesa {
@@ -40,54 +41,49 @@ export const mainStore = create(
     adicionarDespesa: async (valor: number, descricao: string) => {
       const id = Math.floor(Math.random() * Date.now());
       const newDespesa: IDespesa = { id, valor, descricao };
-      set((state) => {
-        state.despesas.push(newDespesa);
-      });
-      let resApi: ResApi = await atualizarApiBin(get().pessoas, get().despesas);
-      if (resApi.success === false) {
+      const copiaDespesas = cloneDeep(get().despesas);
+      copiaDespesas.push(newDespesa);
+      let resApi: ResApi = await atualizarApiBin(get().pessoas, copiaDespesas);
+      if (resApi.success === true) {
         set((state) => {
-          state.despesas.pop();
+          state.despesas.push(newDespesa);
         });
-        return false;
+        return true;
       }
-      return true;
+      return false;
     },
     alterarDespesa: async (id: number, valor: number, descricao: string) => {
       let valorOriginal: number;
       let descricaoOriginal: string;
-      set((state) => {
-        const index = state.despesas.findIndex((d) => d.id === id);
-        valorOriginal = state.despesas[index].valor;
-        descricaoOriginal = state.despesas[index].descricao;
-        state.despesas[index].valor = valor;
-        state.despesas[index].descricao = descricao;
-      });
-      let resApi: ResApi = await atualizarApiBin(get().pessoas, get().despesas);
-      if (resApi.success === false) {
+      const copiaDespesas = cloneDeep(get().despesas);
+      const index = copiaDespesas.findIndex((d) => d.id === id);
+      copiaDespesas[index].valor = valor;
+      copiaDespesas[index].descricao = descricao;
+      let resApi: ResApi = await atualizarApiBin(get().pessoas, copiaDespesas);
+      if (resApi.success) {
         set((state) => {
           const index = state.despesas.findIndex((d) => d.id === id);
-          state.despesas[index].valor = valorOriginal;
-          state.despesas[index].descricao = descricaoOriginal;
+          valorOriginal = state.despesas[index].valor;
+          descricaoOriginal = state.despesas[index].descricao;
+          state.despesas[index].valor = valor;
+          state.despesas[index].descricao = descricao;
         });
-        return false;
+        return true;
       }
-      return true;
+      return false;
     },
     removerDespesa: async (id: number) => {
-      let despesaRemovida: IDespesa;
-      set((state) => {
-        const index = state.despesas.findIndex((d) => d.id === id);
-        despesaRemovida = state.despesas[index];
-        state.despesas.splice(index, 1);
-      });
-      let resApi: ResApi = await atualizarApiBin(get().pessoas, get().despesas);
-      if (resApi.success === false) {
+      const copiaDespesas = cloneDeep(get().despesas);
+      const index = copiaDespesas.findIndex((d) => d.id === id);
+      copiaDespesas.splice(index, 1);
+      let resApi: ResApi = await atualizarApiBin(get().pessoas, copiaDespesas);
+      if (resApi.success) {
         set((state) => {
-          state.despesas.push(despesaRemovida);
+          state.despesas.splice(index, 1);
         });
-        return false;
+        return true;
       }
-      return true;
+      return false;
     },
     popularPessoas: (pessoas: IPessoa[]) => {
       set((state) => {
