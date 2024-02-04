@@ -22,8 +22,9 @@ const valoresPorPessoaStore = derive<ValoresPorPessoa[]>((get) => {
   }, 0);
 
   const totalReceitas = pessoas.reduce(
-    (acc, { salario, alimentacao, inssPorcentagem }) => {
-      const passagem = salario * 0.06;
+    (acc, { nome, salario, alimentacao, inssPorcentagem }) => {
+      let passagem = salario * 0.06;
+      if (nome === "Winer") passagem = 0;
       const inss = salario * inssPorcentagem - 19.8;
       return acc + (salario - inss - passagem + alimentacao);
     },
@@ -32,7 +33,8 @@ const valoresPorPessoaStore = derive<ValoresPorPessoa[]>((get) => {
 
   return pessoas.map((pessoa) => {
     const inssValor = pessoa.salario * pessoa.inssPorcentagem - 19.8;
-    const passagemValor = pessoa.salario * 0.06;
+    let passagemValor = pessoa.salario * 0.06;
+    if (pessoa.nome === "Winer") passagemValor = 0;
     const receitaPessoa =
       pessoa.salario - inssValor - passagemValor + pessoa.alimentacao;
     const porcentagem = Number((receitaPessoa / totalReceitas).toFixed(2));

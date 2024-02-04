@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import { Button, Col, Form, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
-import { jsonBinType } from "../pages";
+import { useState } from "react";
+import { Button, Form, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
+
 import { mainStore } from "../stores/pessoa_e_despesa";
 
 

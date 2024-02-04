@@ -3,6 +3,7 @@ import { immer } from "zustand/middleware/immer";
 import cloneDeep from "lodash/cloneDeep";
 
 export interface IPessoa {
+  id: number;
   nome: string;
   salario: number;
   alimentacao: number;
@@ -25,6 +26,20 @@ interface ImainStore {
     descricao: string
   ) => Promise<boolean>;
   removerDespesa: (id: number) => Promise<boolean>;
+  adicionarPessoa: (
+    nome: string,
+    salario: number,
+    alimentacao: number,
+    inssPorcentagem: number
+  ) => Promise<boolean>;
+  alterarPessoa: (
+    id: number,
+    nome: string,
+    salario: number,
+    alimentacao: number,
+    inssPorcentagem: number
+  ) => Promise<boolean>;
+  removerPessoa: (id: number) => Promise<boolean>;
   popularPessoas: (pessoas: IPessoa[]) => void;
   popularDespesas: (despesas: IDespesa[]) => void;
 }
@@ -76,6 +91,71 @@ export const mainStore = create(
       if (resApi.success) {
         set((state) => {
           state.despesas.splice(index, 1);
+        });
+        return true;
+      }
+      return false;
+    },
+    adicionarPessoa: async (
+      nome: string,
+      salario: number,
+      alimentacao: number,
+      inssPorcentagem: number
+    ) => {
+      const id = Math.floor(Math.random() * Date.now());
+      const newPessoa: IPessoa = {
+        id,
+        nome,
+        salario,
+        alimentacao,
+        inssPorcentagem,
+      };
+      const copiaPessoas = cloneDeep(get().pessoas);
+      copiaPessoas.push(newPessoa);
+      let resApi: ResApi = await atualizarApiBin(copiaPessoas, get().despesas);
+      if (resApi.success === true) {
+        set((state) => {
+          state.pessoas.push(newPessoa);
+        });
+        return true;
+      }
+      return false;
+    },
+    alterarPessoa: async (
+      id: number,
+      nome: string,
+      salario: number,
+      alimentacao: number,
+      inssPorcentagem: number
+    ) => {
+      const copiaPessoas = cloneDeep(get().pessoas);
+      const index = copiaPessoas.findIndex((d) => d.id === id);
+      copiaPessoas[index].nome = nome;
+      copiaPessoas[index].salario = salario;
+      copiaPessoas[index].alimentacao = alimentacao;
+      copiaPessoas[index].inssPorcentagem = inssPorcentagem;
+
+      let resApi: ResApi = await atualizarApiBin(copiaPessoas, get().despesas);
+      if (resApi.success) {
+        set((state) => {
+          const index = state.despesas.findIndex((d) => d.id === id);
+          copiaPessoas[index].nome = nome;
+          copiaPessoas[index].salario = salario;
+          copiaPessoas[index].alimentacao = alimentacao;
+          copiaPessoas[index].inssPorcentagem = inssPorcentagem;
+        });
+        return true;
+      }
+      return false;
+    },
+    removerPessoa: async (id: number) => {
+      const copiaPessoas = cloneDeep(get().pessoas);
+      const index = copiaPessoas.findIndex((p) => p.id === id);
+      copiaPessoas.splice(index, 1);
+      let resApi: ResApi = await atualizarApiBin(copiaPessoas, get().despesas);
+      if (resApi.success) {
+        set((state) => {
+          state.pessoas.splice(index, 1);
         });
         return true;
       }
