@@ -120,12 +120,22 @@ export default function MostrarDespesas() {
             <Form>
               <Form.Group controlId="formValor">
                 <Form.Label>Valor</Form.Label>
-                <Form.Control type="number" placeholder="Valor" value={formData.valor} onChange={(e) => setFormData({ ...formData, valor: Number(e.target.value) })} />
+                <Form.Control
+                  type="number"
+                  placeholder="Valor"
+                  value={formData.valor}
+                  onChange={(e) => setFormData({ ...formData, valor: Number(e.target.value) })}
+                />
               </Form.Group>
 
               <Form.Group controlId="formDescricao">
                 <Form.Label>Descrição</Form.Label>
-                <Form.Control type="text" placeholder="Descrição" value={formData.descricao} onChange={(e) => setFormData({ ...formData, descricao: e.target.value })} />
+                <Form.Control
+                  type="text"
+                  placeholder="Descrição"
+                  value={formData.descricao}
+                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                />
               </Form.Group>
             </Form>
           </Row>

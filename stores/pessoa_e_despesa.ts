@@ -53,8 +53,6 @@ export const mainStore = create(
       return false;
     },
     alterarDespesa: async (id: number, valor: number, descricao: string) => {
-      let valorOriginal: number;
-      let descricaoOriginal: string;
       const copiaDespesas = cloneDeep(get().despesas);
       const index = copiaDespesas.findIndex((d) => d.id === id);
       copiaDespesas[index].valor = valor;
@@ -63,8 +61,6 @@ export const mainStore = create(
       if (resApi.success) {
         set((state) => {
           const index = state.despesas.findIndex((d) => d.id === id);
-          valorOriginal = state.despesas[index].valor;
-          descricaoOriginal = state.despesas[index].descricao;
           state.despesas[index].valor = valor;
           state.despesas[index].descricao = descricao;
         });
