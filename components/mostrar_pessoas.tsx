@@ -8,8 +8,10 @@ type FormDataType = {
   id: number | null;
   nome: string;
   salario: number;
-  alimentacao: number;
-  inssPorcentagem: number;
+  valorAlimentacao: number;
+  porcentagemTaxaInss: number;
+  porcentagemTaxaAlimentacao: number;
+  porcentagemTaxaPassagem: number;
 }
 
 export default function MostrarPessoas() {
@@ -27,8 +29,10 @@ export default function MostrarPessoas() {
     id: null,
     nome: '',
     salario: 0,
-    alimentacao: 0,
-    inssPorcentagem: 0,
+    valorAlimentacao: 0,
+    porcentagemTaxaInss: 0,
+    porcentagemTaxaAlimentacao: 0,
+    porcentagemTaxaPassagem: 0,
   });
 
   const handleShow = (id: number | null) => {
@@ -37,14 +41,24 @@ export default function MostrarPessoas() {
       if (!pessoa) {
         throw new Error("Despesa não encontrada");
       }
-      setFormData({ id: pessoa.id, nome: pessoa.nome, salario: pessoa.salario, inssPorcentagem: pessoa.inssPorcentagem, alimentacao: pessoa.alimentacao })
+      setFormData({
+        id: pessoa.id,
+        nome: pessoa.nome,
+        salario: pessoa.salario,
+        valorAlimentacao: pessoa.valorAlimentacao,
+        porcentagemTaxaInss: pessoa.porcentagemTaxaInss,
+        porcentagemTaxaAlimentacao: pessoa.porcentagemTaxaAlimentacao,
+        porcentagemTaxaPassagem: pessoa.porcentagemTaxaPassagem,
+      })
     } else {
       setFormData({
         id: null,
         nome: '',
         salario: 0,
-        alimentacao: 0,
-        inssPorcentagem: 0,
+        valorAlimentacao: 0,
+        porcentagemTaxaInss: 0,
+        porcentagemTaxaAlimentacao: 0,
+        porcentagemTaxaPassagem: 0,
       })
     }
     setShowModal(true)
@@ -54,9 +68,24 @@ export default function MostrarPessoas() {
     setIsLoading(true);
     let resultado = false;
     if (formData.id === null) {
-      resultado = await adicionarPessoa(formData.nome, formData.salario, formData.alimentacao, formData.inssPorcentagem);
+      resultado = await adicionarPessoa(
+        formData.nome,
+        formData.salario,
+        formData.valorAlimentacao,
+        formData.porcentagemTaxaInss,
+        formData.porcentagemTaxaAlimentacao,
+        formData.porcentagemTaxaPassagem,
+      );
     } else {
-      resultado = await alterarPessoa(formData.id, formData.nome, formData.salario, formData.alimentacao, formData.inssPorcentagem);
+      resultado = await alterarPessoa(
+        formData.id,
+        formData.nome,
+        formData.salario,
+        formData.valorAlimentacao,
+        formData.porcentagemTaxaInss,
+        formData.porcentagemTaxaAlimentacao,
+        formData.porcentagemTaxaPassagem,
+      );
     }
 
     if (!resultado) {
@@ -69,8 +98,10 @@ export default function MostrarPessoas() {
         id: null,
         nome: '',
         salario: 0,
-        alimentacao: 0,
-        inssPorcentagem: 0,
+        valorAlimentacao: 0,
+        porcentagemTaxaInss: 0,
+        porcentagemTaxaAlimentacao: 0,
+        porcentagemTaxaPassagem: 0,
       })
     }
     setIsLoading(false);
@@ -92,7 +123,7 @@ export default function MostrarPessoas() {
 
       <h1 >Salários</h1>
       <Button variant="success" style={{ marginBottom: '8px' }} onClick={() => handleShow(null)}>Adicionar Pessoa</Button>
-      {pessoas.map(({ id, nome, salario, alimentacao, inssPorcentagem }) => {
+      {pessoas.map(({ id, nome, salario, valorAlimentacao, porcentagemTaxaInss, porcentagemTaxaPassagem }) => {
         const valores = valorPorPessoa.find((valor) => valor.nomePessoa === nome);
         if (valores === undefined) {
           return <></>
@@ -124,9 +155,9 @@ export default function MostrarPessoas() {
             </Card.Body>
             <ListGroup className="list-group-flush">
               <ListGroup.Item>Salário Bruto: {formatacao.format(salario)}</ListGroup.Item>
-              <ListGroup.Item>Alimentação: {formatacao.format(alimentacao)}</ListGroup.Item>
-              <ListGroup.Item>INSS: {formatacao.format(inssValor * -1)} ({inssPorcentagem * 100}%)</ListGroup.Item>
-              <ListGroup.Item>Passagem: {formatacao.format(passagemValor * -1)} (6%)</ListGroup.Item>
+              <ListGroup.Item>Alimentação: {formatacao.format(valorAlimentacao)}</ListGroup.Item>
+              <ListGroup.Item>INSS: {formatacao.format(inssValor * -1)} ({porcentagemTaxaInss}%)</ListGroup.Item>
+              <ListGroup.Item>Passagem: {formatacao.format(passagemValor * -1)} ({porcentagemTaxaPassagem}%)</ListGroup.Item>
               <ListGroup.Item>Salário líquido: {formatacao.format(salarioLiquido)}</ListGroup.Item>
             </ListGroup>
           </Card>
@@ -149,11 +180,19 @@ export default function MostrarPessoas() {
               </Form.Group>
               <Form.Group controlId="formAlimentacao">
                 <Form.Label>Alimentação</Form.Label>
-                <Form.Control type="number" placeholder="Alimentação" value={formData.alimentacao} onChange={(e) => setFormData({ ...formData, alimentacao: Number(e.target.value) })} />
+                <Form.Control type="number" placeholder="Alimentação" value={formData.valorAlimentacao} onChange={(e) => setFormData({ ...formData, valorAlimentacao: Number(e.target.value) })} />
               </Form.Group>
               <Form.Group controlId="formInss">
                 <Form.Label>INSS (porcentagem)</Form.Label>
-                <Form.Control type="number" placeholder="INSS" value={formData.inssPorcentagem} onChange={(e) => setFormData({ ...formData, inssPorcentagem: Number(e.target.value) })} />
+                <Form.Control type="number" placeholder="INSS" value={formData.porcentagemTaxaInss} onChange={(e) => setFormData({ ...formData, porcentagemTaxaInss: Number(e.target.value) })} />
+              </Form.Group>
+              <Form.Group controlId="formTaxaAlimentacao">
+                <Form.Label>Taxa alimentação (porcentagem)</Form.Label>
+                <Form.Control type="number" placeholder="Taxa Alimentação" value={formData.porcentagemTaxaAlimentacao} onChange={(e) => setFormData({ ...formData, porcentagemTaxaAlimentacao: Number(e.target.value) })} />
+              </Form.Group>
+              <Form.Group controlId="formTaxaPassagem">
+                <Form.Label>Taxa passagem (porcentagem)</Form.Label>
+                <Form.Control type="number" placeholder="Taxa Passagem" value={formData.porcentagemTaxaAlimentacao} onChange={(e) => setFormData({ ...formData, porcentagemTaxaAlimentacao: Number(e.target.value) })} />
               </Form.Group>
             </Form>
           </Row>

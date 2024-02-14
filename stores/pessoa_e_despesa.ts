@@ -6,8 +6,10 @@ export interface IPessoa {
   id: number;
   nome: string;
   salario: number;
-  alimentacao: number;
-  inssPorcentagem: number;
+  valorAlimentacao: number;
+  porcentagemTaxaInss: number;
+  porcentagemTaxaAlimentacao: number;
+  porcentagemTaxaPassagem: number;
 }
 
 export interface IDespesa {
@@ -29,15 +31,19 @@ interface ImainStore {
   adicionarPessoa: (
     nome: string,
     salario: number,
-    alimentacao: number,
-    inssPorcentagem: number
+    valorAlimentacao: number,
+    porcentagemTaxaInss: number,
+    porcentagemTaxaAlimentacao: number,
+    porcentagemTaxaPassagem: number
   ) => Promise<boolean>;
   alterarPessoa: (
     id: number,
     nome: string,
     salario: number,
-    alimentacao: number,
-    inssPorcentagem: number
+    valorAlimentacao: number,
+    porcentagemTaxaInss: number,
+    porcentagemTaxaAlimentacao: number,
+    porcentagemTaxaPassagem: number
   ) => Promise<boolean>;
   removerPessoa: (id: number) => Promise<boolean>;
   popularPessoas: (pessoas: IPessoa[]) => void;
@@ -99,16 +105,20 @@ export const mainStore = create(
     adicionarPessoa: async (
       nome: string,
       salario: number,
-      alimentacao: number,
-      inssPorcentagem: number
+      valorAlimentacao: number,
+      porcentagemTaxaInss: number,
+      porcentagemTaxaAlimentacao: number,
+      porcentagemTaxaPassagem: number
     ) => {
       const id = Math.floor(Math.random() * Date.now());
       const newPessoa: IPessoa = {
         id,
         nome,
         salario,
-        alimentacao,
-        inssPorcentagem,
+        valorAlimentacao,
+        porcentagemTaxaInss,
+        porcentagemTaxaAlimentacao,
+        porcentagemTaxaPassagem,
       };
       const copiaPessoas = cloneDeep(get().pessoas);
       copiaPessoas.push(newPessoa);
@@ -125,24 +135,35 @@ export const mainStore = create(
       id: number,
       nome: string,
       salario: number,
-      alimentacao: number,
-      inssPorcentagem: number
+      valorAlimentacao: number,
+      porcentagemTaxaInss: number,
+      porcentagemTaxaAlimentacao: number,
+      porcentagemTaxaPassagem: number
     ) => {
       const copiaPessoas = cloneDeep(get().pessoas);
       const index = copiaPessoas.findIndex((d) => d.id === id);
+      copiaPessoas[index].id = id;
       copiaPessoas[index].nome = nome;
       copiaPessoas[index].salario = salario;
-      copiaPessoas[index].alimentacao = alimentacao;
-      copiaPessoas[index].inssPorcentagem = inssPorcentagem;
+      copiaPessoas[index].valorAlimentacao = valorAlimentacao;
+      copiaPessoas[index].porcentagemTaxaInss = porcentagemTaxaInss;
+      copiaPessoas[index].porcentagemTaxaAlimentacao =
+        porcentagemTaxaAlimentacao;
+      copiaPessoas[index].porcentagemTaxaPassagem = porcentagemTaxaPassagem;
 
       let resApi: ResApi = await atualizarApiBin(copiaPessoas, get().despesas);
       if (resApi.success) {
         set((state) => {
           const index = state.despesas.findIndex((d) => d.id === id);
-          copiaPessoas[index].nome = nome;
-          copiaPessoas[index].salario = salario;
-          copiaPessoas[index].alimentacao = alimentacao;
-          copiaPessoas[index].inssPorcentagem = inssPorcentagem;
+          state.pessoas[index].id = id;
+          state.pessoas[index].nome = nome;
+          state.pessoas[index].salario = salario;
+          state.pessoas[index].valorAlimentacao = valorAlimentacao;
+          state.pessoas[index].porcentagemTaxaInss = porcentagemTaxaInss;
+          state.pessoas[index].porcentagemTaxaAlimentacao =
+            porcentagemTaxaAlimentacao;
+          state.pessoas[index].porcentagemTaxaPassagem =
+            porcentagemTaxaPassagem;
         });
         return true;
       }

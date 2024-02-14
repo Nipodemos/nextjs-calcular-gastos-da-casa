@@ -1,5 +1,5 @@
 import { derive } from "derive-zustand";
-import { mainStore } from "./pessoa_e_despesa";
+import { IPessoa, mainStore } from "./pessoa_e_despesa";
 import { useStore } from "zustand";
 
 interface ValoresPorPessoa {
@@ -21,37 +21,71 @@ const valoresPorPessoaStore = derive<ValoresPorPessoa[]>((get) => {
     return acc + despesa.valor;
   }, 0);
 
-  const totalReceitas = pessoas.reduce(
-    (acc, { nome, salario, alimentacao, inssPorcentagem }) => {
-      let passagem = salario * 0.06;
-      if (nome === "Winer") passagem = 0;
-      const inss = salario * inssPorcentagem - 19.8;
-      return acc + (salario - inss - passagem + alimentacao);
-    },
-    0
-  );
+  const totalReceitas = pessoas.reduce((acc, pessoa) => {
+    const salarioLiquido = getSalarioLiquido(pessoa);
+    return acc + salarioLiquido;
+  }, 0);
 
   return pessoas.map((pessoa) => {
-    const inssValor = pessoa.salario * pessoa.inssPorcentagem - 19.8;
-    let passagemValor = pessoa.salario * 0.06;
-    if (pessoa.nome === "Winer") passagemValor = 0;
-    const receitaPessoa =
-      pessoa.salario - inssValor - passagemValor + pessoa.alimentacao;
-    const porcentagem = Number((receitaPessoa / totalReceitas).toFixed(2));
+    const salarioLiquido = getSalarioLiquido(pessoa);
+    const porcentagem = Number((salarioLiquido / totalReceitas).toFixed(2));
     const valor = Number(totalDespesas * porcentagem);
-    const valorQueSobra = receitaPessoa - valor;
-    const salarioLiquido = pessoa.salario - inssValor - passagemValor;
+    const valorQueSobra = salarioLiquido - valor;
+    const inssValor = getValorTaxaInss(pessoa);
+    const passagemValor = getValorTaxaPassagem(pessoa);
     return {
       porcentagem,
       valor,
       valorQueSobra,
       inssValor,
       passagemValor,
+      porcentagemTaxaPassagem: pessoa.porcentagemTaxaPassagem,
       nomePessoa: pessoa.nome,
       salarioLiquido,
     };
   });
 });
+
+function getSalarioLiquido(pessoa: IPessoa) {
+  let valorTaxaPassagem = getValorTaxaPassagem(pessoa);
+  let valorTaxaAlimentacao = getValorTaxaAlimentacao(pessoa);
+  let valorTaxaInss = getValorTaxaInss(pessoa);
+
+  return (
+    pessoa.salario -
+    valorTaxaInss -
+    valorTaxaPassagem -
+    valorTaxaAlimentacao +
+    pessoa.valorAlimentacao
+  );
+}
+
+function getValorTaxaInss({ salario, porcentagemTaxaInss }: IPessoa) {
+  let valorTaxaInss = 0;
+  if (porcentagemTaxaInss > 0) {
+    valorTaxaInss = (salario / 100) * porcentagemTaxaInss - 19.8;
+  }
+  return valorTaxaInss;
+}
+
+function getValorTaxaPassagem({ salario, porcentagemTaxaPassagem }: IPessoa) {
+  let valorTaxaPassagem = 0;
+  if (porcentagemTaxaPassagem > 0) {
+    valorTaxaPassagem = (salario / 100) * porcentagemTaxaPassagem - 19.8;
+  }
+  return valorTaxaPassagem;
+}
+
+function getValorTaxaAlimentacao({
+  salario,
+  porcentagemTaxaAlimentacao,
+}: IPessoa) {
+  let valorTaxaAlimentacao = 0;
+  if (porcentagemTaxaAlimentacao > 0) {
+    valorTaxaAlimentacao = (salario / 100) * porcentagemTaxaAlimentacao;
+  }
+  return valorTaxaAlimentacao;
+}
 
 export const useValorPorPessoaStore = <T>(
   selector: (state: ValoresPorPessoa[]) => T
