@@ -1,5 +1,3 @@
-import { use, useEffect, useState } from "react"
-import { mainStore } from "../stores/pessoa_e_despesa";
 import { Card, ListGroup } from "react-bootstrap";
 import { useValorPorPessoaStore } from "../stores/valor_por_pessoa";
 

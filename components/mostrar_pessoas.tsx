@@ -192,7 +192,7 @@ export default function MostrarPessoas() {
               </Form.Group>
               <Form.Group controlId="formTaxaPassagem">
                 <Form.Label>Taxa passagem (porcentagem)</Form.Label>
-                <Form.Control type="number" placeholder="Taxa Passagem" value={formData.porcentagemTaxaAlimentacao} onChange={(e) => setFormData({ ...formData, porcentagemTaxaAlimentacao: Number(e.target.value) })} />
+                <Form.Control type="number" placeholder="Taxa Passagem" value={formData.porcentagemTaxaPassagem} onChange={(e) => setFormData({ ...formData, porcentagemTaxaPassagem: Number(e.target.value) })} />
               </Form.Group>
             </Form>
           </Row>

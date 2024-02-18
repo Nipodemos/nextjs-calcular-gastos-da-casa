@@ -41,6 +41,7 @@ export default function MostrarDespesas() {
   const handleSave = async () => {
     setIsLoading(true);
     let resultado = false;
+    console.log(formData);
     if (formData.id === null) {
       resultado = await adicionarDespesa(formData.valor, formData.descricao);
     } else {
@@ -124,7 +125,7 @@ export default function MostrarDespesas() {
                   type="number"
                   placeholder="Valor"
                   value={formData.valor}
-                  onChange={(e) => setFormData({ ...formData, valor: Number(e.target.value) })}
+                  onChange={(e) => setFormData((prevValue) => ({ ...prevValue, valor: Number(e.target.value) }))}
                 />
               </Form.Group>
 
@@ -134,7 +135,7 @@ export default function MostrarDespesas() {
                   type="text"
                   placeholder="Descrição"
                   value={formData.descricao}
-                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                  onChange={(e) => setFormData((prevValue) => ({ ...prevValue, descricao: e.target.value }))}
                 />
               </Form.Group>
             </Form>

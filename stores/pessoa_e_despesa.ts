@@ -1,6 +1,6 @@
+import { Despesa } from "@prisma/client";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import cloneDeep from "lodash/cloneDeep";
 
 export interface IPessoa {
   id: number;
@@ -50,52 +50,68 @@ interface ImainStore {
   popularDespesas: (despesas: IDespesa[]) => void;
 }
 
-interface ResApi {
-  success: boolean;
-  error?: string;
-}
-
 export const mainStore = create(
   immer<ImainStore>((set, get) => ({
     pessoas: [],
     despesas: [],
     adicionarDespesa: async (valor: number, descricao: string) => {
-      const id = Math.floor(Math.random() * Date.now());
-      const newDespesa: IDespesa = { id, valor, descricao };
-      const copiaDespesas = cloneDeep(get().despesas);
-      copiaDespesas.push(newDespesa);
-      let resApi: ResApi = await atualizarApiBin(get().pessoas, copiaDespesas);
-      if (resApi.success === true) {
+      const respostaApi = await fetch("/api/despesa/inserir_despesa", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          descricao,
+          valor,
+        }),
+      });
+      const novaDespesa: IDespesa = await respostaApi.json();
+      if (respostaApi.status === 200) {
         set((state) => {
-          state.despesas.push(newDespesa);
+          state.despesas.push(novaDespesa);
         });
         return true;
       }
       return false;
     },
     alterarDespesa: async (id: number, valor: number, descricao: string) => {
-      const copiaDespesas = cloneDeep(get().despesas);
-      const index = copiaDespesas.findIndex((d) => d.id === id);
-      copiaDespesas[index].valor = valor;
-      copiaDespesas[index].descricao = descricao;
-      let resApi: ResApi = await atualizarApiBin(get().pessoas, copiaDespesas);
-      if (resApi.success) {
+      const respostaApi = await fetch("/api/despesa/editar_despesa", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          valor,
+          descricao,
+        }),
+      });
+      const despesaEditada: IDespesa = await respostaApi.json();
+      if (respostaApi.status === 200) {
         set((state) => {
           const index = state.despesas.findIndex((d) => d.id === id);
-          state.despesas[index].valor = valor;
-          state.despesas[index].descricao = descricao;
+          state.despesas[index].id = despesaEditada.id;
+          state.despesas[index].valor = despesaEditada.valor;
+          state.despesas[index].descricao = despesaEditada.descricao;
         });
         return true;
       }
       return false;
     },
     removerDespesa: async (id: number) => {
-      const copiaDespesas = cloneDeep(get().despesas);
-      const index = copiaDespesas.findIndex((d) => d.id === id);
-      copiaDespesas.splice(index, 1);
-      let resApi: ResApi = await atualizarApiBin(get().pessoas, copiaDespesas);
-      if (resApi.success) {
+      const resultadoApi = await fetch("/api/despesa/excluir_despesa", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+
+      if (resultadoApi.status === 200) {
         set((state) => {
+          const index = state.despesas.findIndex((d) => d.id === id);
           state.despesas.splice(index, 1);
         });
         return true;
@@ -110,22 +126,32 @@ export const mainStore = create(
       porcentagemTaxaAlimentacao: number,
       porcentagemTaxaPassagem: number
     ) => {
-      const id = Math.floor(Math.random() * Date.now());
-      const newPessoa: IPessoa = {
-        id,
-        nome,
-        salario,
-        valorAlimentacao,
-        porcentagemTaxaInss,
-        porcentagemTaxaAlimentacao,
-        porcentagemTaxaPassagem,
-      };
-      const copiaPessoas = cloneDeep(get().pessoas);
-      copiaPessoas.push(newPessoa);
-      let resApi: ResApi = await atualizarApiBin(copiaPessoas, get().despesas);
-      if (resApi.success === true) {
+      const respostaApi = await fetch("/api/pessoa/inserir_pessoa", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome,
+          salario,
+          valorAlimentacao,
+          porcentagemTaxaInss,
+          porcentagemTaxaAlimentacao,
+          porcentagemTaxaPassagem,
+        }),
+      });
+      const pessoaAdicionada: IPessoa = await respostaApi.json();
+      if (respostaApi.status === 200) {
         set((state) => {
-          state.pessoas.push(newPessoa);
+          state.pessoas.push({
+            id: pessoaAdicionada.id,
+            nome,
+            salario,
+            valorAlimentacao,
+            porcentagemTaxaInss,
+            porcentagemTaxaAlimentacao,
+            porcentagemTaxaPassagem,
+          });
         });
         return true;
       }
@@ -140,22 +166,26 @@ export const mainStore = create(
       porcentagemTaxaAlimentacao: number,
       porcentagemTaxaPassagem: number
     ) => {
-      const copiaPessoas = cloneDeep(get().pessoas);
-      const index = copiaPessoas.findIndex((d) => d.id === id);
-      copiaPessoas[index].id = id;
-      copiaPessoas[index].nome = nome;
-      copiaPessoas[index].salario = salario;
-      copiaPessoas[index].valorAlimentacao = valorAlimentacao;
-      copiaPessoas[index].porcentagemTaxaInss = porcentagemTaxaInss;
-      copiaPessoas[index].porcentagemTaxaAlimentacao =
-        porcentagemTaxaAlimentacao;
-      copiaPessoas[index].porcentagemTaxaPassagem = porcentagemTaxaPassagem;
-
-      let resApi: ResApi = await atualizarApiBin(copiaPessoas, get().despesas);
-      if (resApi.success) {
+      const resultadoApi = await fetch("/api/pessoa/editar_pessoa", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          nome,
+          salario,
+          valorAlimentacao,
+          porcentagemTaxaInss,
+          porcentagemTaxaAlimentacao,
+          porcentagemTaxaPassagem,
+        }),
+      });
+      const pessoaEditada: IPessoa = await resultadoApi.json();
+      if (resultadoApi.status === 200) {
         set((state) => {
-          const index = state.despesas.findIndex((d) => d.id === id);
-          state.pessoas[index].id = id;
+          const index = state.pessoas.findIndex((d) => d.id === id);
+          state.pessoas[index].id = pessoaEditada.id;
           state.pessoas[index].nome = nome;
           state.pessoas[index].salario = salario;
           state.pessoas[index].valorAlimentacao = valorAlimentacao;
@@ -170,12 +200,19 @@ export const mainStore = create(
       return false;
     },
     removerPessoa: async (id: number) => {
-      const copiaPessoas = cloneDeep(get().pessoas);
-      const index = copiaPessoas.findIndex((p) => p.id === id);
-      copiaPessoas.splice(index, 1);
-      let resApi: ResApi = await atualizarApiBin(copiaPessoas, get().despesas);
-      if (resApi.success) {
+      const resultadoApi = await fetch("/api/pessoa/excluir_pessoa", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+
+      if (resultadoApi.status === 200) {
         set((state) => {
+          const index = state.pessoas.findIndex((d) => d.id === id);
           state.pessoas.splice(index, 1);
         });
         return true;
