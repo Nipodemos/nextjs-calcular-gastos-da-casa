@@ -83,8 +83,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
   }
 
 
-  const pessoasProp = await prisma.pessoa.findMany();
-  const despesasProp = await prisma.despesa.findMany();
+  const pessoasProp = await prisma.pessoa.findMany({ orderBy: { nome: 'asc' } });
+  const despesasProp = await prisma.despesa.findMany({ orderBy: { descricao: 'asc' } });
   if (pessoasProp.length === 0 && despesasProp.length === 0) {
     jsonBin.pessoas.forEach(async (pessoa) => {
       await prisma.pessoa.create({
