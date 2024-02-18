@@ -172,27 +172,62 @@ export default function MostrarPessoas() {
             <Form>
               <Form.Group controlId="formNome">
                 <Form.Label>Nome</Form.Label>
-                <Form.Control type="text" placeholder="Nome" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} />
+                <Form.Control
+                  type="text"
+                  placeholder="Nome"
+                  value={formData.nome}
+                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                />
               </Form.Group>
               <Form.Group controlId="formSalario">
                 <Form.Label>Valor</Form.Label>
-                <Form.Control type="number" placeholder="Salário" value={formData.salario} onChange={(e) => setFormData({ ...formData, salario: Number(e.target.value) })} />
+                <Form.Control
+                  onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                  type="number"
+                  placeholder="Salário"
+                  value={formData.salario}
+                  onChange={(e) => setFormData({ ...formData, salario: Number(e.target.value) })}
+                />
               </Form.Group>
               <Form.Group controlId="formAlimentacao">
                 <Form.Label>Alimentação</Form.Label>
-                <Form.Control type="number" placeholder="Alimentação" value={formData.valorAlimentacao} onChange={(e) => setFormData({ ...formData, valorAlimentacao: Number(e.target.value) })} />
+                <Form.Control
+                  onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                  type="number"
+                  placeholder="Alimentação"
+                  value={formData.valorAlimentacao}
+                  onChange={(e) => setFormData({ ...formData, valorAlimentacao: Number(e.target.value) })}
+                />
               </Form.Group>
               <Form.Group controlId="formInss">
                 <Form.Label>INSS (porcentagem)</Form.Label>
-                <Form.Control type="number" placeholder="INSS" value={formData.porcentagemTaxaInss} onChange={(e) => setFormData({ ...formData, porcentagemTaxaInss: Number(e.target.value) })} />
+                <Form.Control
+                  onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                  type="number"
+                  placeholder="INSS"
+                  value={formData.porcentagemTaxaInss}
+                  onChange={(e) => setFormData({ ...formData, porcentagemTaxaInss: Number(e.target.value) })}
+                />
               </Form.Group>
               <Form.Group controlId="formTaxaAlimentacao">
                 <Form.Label>Taxa alimentação (porcentagem)</Form.Label>
-                <Form.Control type="number" placeholder="Taxa Alimentação" value={formData.porcentagemTaxaAlimentacao} onChange={(e) => setFormData({ ...formData, porcentagemTaxaAlimentacao: Number(e.target.value) })} />
+                <Form.Control
+                  onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                  type="number"
+                  placeholder="Taxa Alimentação"
+                  value={formData.porcentagemTaxaAlimentacao}
+                  onChange={(e) => setFormData({ ...formData, porcentagemTaxaAlimentacao: Number(e.target.value) })}
+                />
               </Form.Group>
               <Form.Group controlId="formTaxaPassagem">
                 <Form.Label>Taxa passagem (porcentagem)</Form.Label>
-                <Form.Control type="number" placeholder="Taxa Passagem" value={formData.porcentagemTaxaPassagem} onChange={(e) => setFormData({ ...formData, porcentagemTaxaPassagem: Number(e.target.value) })} />
+                <Form.Control
+                  onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                  type="number"
+                  placeholder="Taxa Passagem"
+                  value={formData.porcentagemTaxaPassagem}
+                  onChange={(e) => setFormData({ ...formData, porcentagemTaxaPassagem: Number(e.target.value) })}
+                />
               </Form.Group>
             </Form>
           </Row>

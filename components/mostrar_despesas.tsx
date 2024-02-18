@@ -125,6 +125,7 @@ export default function MostrarDespesas() {
                   type="number"
                   placeholder="Valor"
                   value={formData.valor}
+                  onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
                   onChange={(e) => setFormData((prevValue) => ({ ...prevValue, valor: Number(e.target.value) }))}
                 />
               </Form.Group>
