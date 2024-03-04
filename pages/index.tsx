@@ -83,19 +83,25 @@ export const getServerSideProps: GetServerSideProps = async () => {
   }
 
 
-  const pessoasProp = await prisma.pessoa.findMany({ orderBy: { nome: 'asc' } });
-  const despesasProp = await prisma.despesa.findMany({ orderBy: { descricao: 'asc' } });
-  if (pessoasProp.length === 0 && despesasProp.length === 0) {
-    jsonBin.pessoas.forEach(async (pessoa) => {
+  let pessoasProp = await prisma.pessoa.findMany({ orderBy: { nome: 'asc' } });
+  let despesasProp = await prisma.despesa.findMany({ orderBy: { descricao: 'asc' } });
+  if (pessoasProp.length === 0) {
+    console.log('criando as pessoas no banco de dados...')
+    for (let i = 0; i < jsonBin.pessoas.length; i++) {
       await prisma.pessoa.create({
-        data: pessoa
+        data: jsonBin.pessoas[i]
       })
-    })
-    jsonBin.despesas.forEach(async (despesa) => {
+    }
+    pessoasProp = await prisma.pessoa.findMany({ orderBy: { nome: 'asc' } });
+  }
+  if (despesasProp.length === 0) {
+    console.log('criando as despesas no banco de dados...')
+    for (let i = 0; i < jsonBin.despesas.length; i++) {
       await prisma.despesa.create({
-        data: despesa
+        data: jsonBin.despesas[i]
       })
-    })
+    }
+    despesasProp = await prisma.despesa.findMany({ orderBy: { descricao: 'asc' } });
   }
 
   return {
