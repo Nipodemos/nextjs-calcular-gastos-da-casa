@@ -28,7 +28,10 @@ const valoresPorPessoaStore = derive<ValoresPorPessoa[]>((get) => {
 
   return pessoas.map((pessoa) => {
     const salarioLiquido = getSalarioLiquido(pessoa);
-    const porcentagem = Number((salarioLiquido / totalReceitas).toFixed(2));
+    const porcentagem = Number.parseFloat(
+      (salarioLiquido / totalReceitas).toFixed(4)
+    );
+    console.log("porcentagem :>> ", porcentagem);
     const valor = Number(totalDespesas * porcentagem);
     const valorQueSobra = salarioLiquido - valor;
     const inssValor = getValorTaxaInss(pessoa);

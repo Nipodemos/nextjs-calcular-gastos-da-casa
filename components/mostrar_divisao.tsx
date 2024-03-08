@@ -15,11 +15,11 @@ export default function MostrarDivisao() {
           </Card.Body>
           <ListGroup className="list-group-flush">
             <ListGroup.Item>
-              Valor: {formatter.format(Number(valor.toFixed(0)))}
-              {' '} ({(porcentagem * 100).toFixed(0)}%)
+              Valor: {formatter.format(Number(valor.toFixed(2)))}
+              {' '} ({(porcentagem * 100).toFixed(2)}%)
             </ListGroup.Item>
             <ListGroup.Item>
-              Sobra: {formatter.format(Number(valorQueSobra.toFixed(0)))}
+              Sobra: {formatter.format(Number(valorQueSobra.toFixed(2)))}
             </ListGroup.Item>
           </ListGroup>
 
