@@ -1,4 +1,6 @@
-import { useEffect } from 'react';
+// pages/index.tsx
+
+import { useState } from 'react'; // Importe o useState
 import MostrarDespesas from './mostrar_despesas';
 import MostrarDivisao from './mostrar_divisao';
 import MostrarPessoas from './mostrar_pessoas';
@@ -7,15 +9,14 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { verify } from 'jsonwebtoken';
-import { IPessoa, IDespesa, mainStore } from '../stores/pessoa_e_despesa';
+import { IPessoa, IDespesa } from '@/types';
 import prisma from '../prisma/db';
+import { calcularDivisao } from '../lib/calculations';
 
-// Este tipo não precisa mudar
-export type jsonBinType = {
-  pessoas: Array<IPessoa>;
-  despesas: Array<IDespesa>;
-}
+// 1. IMPORTE AS NOVAS FUNÇÕES DA API
+import * as api from '../lib/api';
 
+// getServerSideProps continua exatamente igual. Está perfeito.
 export const getServerSideProps: GetServerSideProps = async (context) => {
   // Pega o token do cookie da requisição do navegador
   const token = context.req.cookies.auth_token;
@@ -57,44 +58,105 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         despesasProp: JSON.parse(JSON.stringify(despesasProp)),
       }
     }
-
   } catch (error) {
     // 5. Se 'verify' lançou um erro, o token é inválido. Redirecionamos para o login.
     console.error("Erro de autenticação, token inválido:", (error as Error).message);
     return redirectToLogin;
   }
-}
+};
 
 export default function Home({
   pessoasProp,
   despesasProp
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const popularDespesas = mainStore((state) => state.popularDespesas);
-  const popularPessoas = mainStore((state) => state.popularPessoas);
 
-  useEffect(() => {
-    // Este useEffect só vai rodar se getServerSideProps retornar os dados com sucesso.
-    if (pessoasProp && despesasProp) {
-      popularDespesas(despesasProp);
-      popularPessoas(pessoasProp);
+  // 2. GERENCIE O ESTADO AQUI, USANDO AS PROPS DO SERVIDOR COMO VALOR INICIAL
+  const [pessoas, setPessoas] = useState<IPessoa[]>(pessoasProp);
+  const [despesas, setDespesas] = useState<IDespesa[]>(despesasProp);
+
+  const handleAdicionarDespesa = async (valor: number, descricao: string) => {
+    const novaDespesa = await api.adicionarDespesa(valor, descricao);
+    if (novaDespesa) {
+      setDespesas(prev => [...prev, novaDespesa].sort((a, b) => a.descricao.localeCompare(b.descricao)));
+      return true;
     }
-  }, [despesasProp, pessoasProp, popularDespesas, popularPessoas])
+    return false;
+  };
+  const handleAdicionarPessoa = async (pessoa: Omit<IPessoa, 'id'>) => {
+    const novaPessoa = await api.adicionarPessoa(pessoa);
+    if (novaPessoa) {
+      setPessoas(prev => [...prev, novaPessoa].sort((a, b) => a.descricao.localeCompare(b.descricao)));
+      return true;
+    }
+    return false;
+  };
 
-  // Esta verificação pode até ser removida, pois getServerSideProps nunca
-  // retornará props vazias, ele sempre redirecionará antes.
-  if (!pessoasProp) {
-    // Teoricamente, esta parte do código nunca será alcançada.
-    return <div>Carregando...</div>
+  const handleAlterarDespesa = async (id: number, valor: number, descricao: string) => {
+    const despesaAlterada = await api.alterarDespesa(id, valor, descricao);
+    if (despesaAlterada) {
+      setDespesas(prev => prev.map(d => d.id === id ? despesaAlterada : d));
+      return true;
+    }
+    return false;
+  };
+  const handleAlterarPessoa = async (pessoa: IPessoa) => {
+    const pessoaAlterada = await api.alterarPessoa(pessoa);
+    if (pessoaAlterada) {
+      setPessoas(prev => prev.map(d => d.id === pessoa.id ? pessoaAlterada : d));
+      return true;
+    }
+    return false;
+  };
+
+  const handleRemoverDespesa = async (id: number) => {
+    const sucesso = await api.removerDespesa(id);
+    if (sucesso) {
+      setDespesas(prev => prev.filter(d => d.id !== id));
+      return true;
+    }
+    return false;
+  };
+
+  const handleRemoverPessoa = async (id: number) => {
+    const sucesso = await api.removerPessoa(id);
+    if (sucesso) {
+      setPessoas(prev => prev.filter(p => p.id !== id));
+      return true;
+    }
+    return false;
   }
+
+
+  // 4. O CÁLCULO DA DIVISÃO AGORA USA O ESTADO LOCAL, PARA SER REATIVO
+  const divisaoCalculada = calcularDivisao(pessoas, despesas);
 
   return (
     <Container fluid >
       <Row >
-        <Col sm={12} md={6}><MostrarDespesas /></Col>
+        <Col sm={12} md={6}>
+          {/* 5. PASSE O ESTADO E OS HANDLERS VIA PROPS */}
+          <MostrarDespesas
+            despesas={despesas}
+            onAdicionarDespesa={handleAdicionarDespesa}
+            onAlterarDespesa={handleAlterarDespesa}
+            onRemoverDespesa={handleRemoverDespesa}
+          />
+        </Col>
+
         <Col sm={12} md={6}>
           <Row>
-            <Col style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} sm={12} md={6}><MostrarDivisao /></Col>
-            <Col style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} sm={12} md={6}><MostrarPessoas /></Col>
+            <Col style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} sm={12} md={6}>
+              <MostrarDivisao divisao={divisaoCalculada} />
+            </Col>
+            <Col style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} sm={12} md={6}>
+              <MostrarPessoas
+                pessoas={pessoas}
+                divisaoCalculada={divisaoCalculada}
+                onAdicionarPessoa={handleAdicionarPessoa}
+                onAlterarPessoa={handleAdicionarPessoa}
+                onRemoverPessoa={handleRemoverPessoa}
+              />
+            </Col>
           </Row>
         </Col>
       </Row>
