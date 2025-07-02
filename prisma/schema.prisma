@@ -11,17 +11,17 @@ datasource db {
 }
 
 model Pessoa {
-  id                         Int    @id @default(autoincrement())
-  nome                       String @unique
-  porcentagemTaxaInss        Float
-  porcentagemTaxaAlimentacao Float
-  porcentagemTaxaPassagem    Float
-  salario                    Float
-  valorAlimentacao           Float
+  id                         Int     @id @default(autoincrement())
+  nome                       String  @unique
+  porcentagemTaxaInss        Decimal
+  porcentagemTaxaAlimentacao Decimal
+  porcentagemTaxaPassagem    Decimal
+  salario                    Decimal
+  valorAlimentacao           Decimal
 }
 
 model Despesa {
-  id        Int    @id @default(autoincrement())
-  valor     Float
-  descricao String @unique
+  id        Int     @id @default(autoincrement())
+  valor     Decimal
+  descricao String  @unique
 }
