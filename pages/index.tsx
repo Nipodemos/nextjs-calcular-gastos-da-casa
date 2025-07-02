@@ -85,7 +85,7 @@ export default function Home({
   const handleAdicionarPessoa = async (pessoa: Omit<IPessoa, 'id'>) => {
     const novaPessoa = await api.adicionarPessoa(pessoa);
     if (novaPessoa) {
-      setPessoas(prev => [...prev, novaPessoa].sort((a, b) => a.descricao.localeCompare(b.descricao)));
+      setPessoas(prev => [...prev, novaPessoa].sort((a, b) => a.nome.localeCompare(b.nome)));
       return true;
     }
     return false;
