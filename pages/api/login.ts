@@ -3,13 +3,16 @@ import { sign } from "jsonwebtoken";
 import { serialize } from "cookie";
 import { NextApiHandler } from "next";
 
-const SECRET_KEY =
-  process.env.JWT_SECRET || "fallback-secret-para-desenvolvimento"; // Crie uma JWT_SECRET no seu .env.local também!
+const SECRET_KEY = process.env.JWT_SECRET || ""; // Crie uma JWT_SECRET no seu .env.local também!
 const SITE_PASSWORD = process.env.SITE_PASSWORD;
 
 const handler: NextApiHandler = (req, res) => {
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method Not Allowed" });
+    return res.status(405).json({ message: "Só pode ser feito POST" });
+  } else if (!SECRET_KEY) {
+    res.status(401).json({ message: "chave JWT não informada no .env" });
+  } else if (!SITE_PASSWORD) {
+    res.status(401).json({ message: "senha não definida internamente" });
   }
 
   const { password } = req.body;
