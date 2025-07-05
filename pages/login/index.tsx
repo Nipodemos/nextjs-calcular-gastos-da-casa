@@ -15,12 +15,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState('');
   const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       const res = await fetch('/api/login', {
@@ -32,18 +34,18 @@ export default function LoginPage() {
       });
 
       if (res.ok) {
-        // Sucesso! Redireciona para a página principal.
+        setSuccess('Login realizado com sucesso! Redirecionando...');
         router.push('/');
       } else {
         const data = await res.json();
         // A API retornou um erro (senha incorreta)
         setError(data.message);
+        setIsLoading(false);
       }
     } catch (err) {
       // Erro de rede ou a API está fora do ar
       setError('Ocorreu um erro de conexão. Tente novamente mais tarde.');
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -66,6 +68,9 @@ export default function LoginPage() {
 
               {/* Mostra a mensagem de erro, se houver */}
               {error && <Alert variant="danger">{error}</Alert>}
+
+              {/* 3. Exibimos a mensagem de sucesso aqui */}
+              {success && <Alert variant="success">{success}</Alert>}
 
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-4" controlId="formPassword">
@@ -96,7 +101,8 @@ export default function LoginPage() {
                           role="status"
                           aria-hidden="true"
                         />
-                        <span className="ms-2">Entrando...</span>
+                        {/* O texto do botão agora se adapta à mensagem de sucesso */}
+                        <span className="ms-2">{success ? 'Redirecionando...' : 'Entrando...'}</span>
                       </>
                     ) : (
                       'Entrar'
