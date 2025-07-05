@@ -32,13 +32,11 @@ export default function LoginPage() {
         },
         body: JSON.stringify({ password }),
       });
-
+      const data = await res.json();
       if (res.ok) {
-        setSuccess('Login realizado com sucesso! Redirecionando...');
+        setSuccess(data.message);
         router.push('/');
       } else {
-        const data = await res.json();
-        // A API retornou um erro (senha incorreta)
         setError(data.message);
         setIsLoading(false);
       }

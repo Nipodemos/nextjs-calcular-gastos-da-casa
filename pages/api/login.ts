@@ -36,10 +36,10 @@ const handler: NextApiHandler = (req, res) => {
     });
 
     res.setHeader("Set-Cookie", serializedCookie);
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({ message: "Login feito com sucesso!" });
   } else {
     // Senha incorreta
-    res.status(401).json({ message: "Invalid credentials" });
+    res.status(401).json({ message: "Senha incorreta, verifique" });
   }
 };
 export default handler;
