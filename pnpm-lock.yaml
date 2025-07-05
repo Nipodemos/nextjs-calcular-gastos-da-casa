@@ -17,6 +17,9 @@ importers:
       bootstrap:
         specifier: ^5.2.3
         version: 5.3.7(@popperjs/core@2.11.8)
+      bootstrap-icons:
+        specifier: ^1.13.1
+        version: 1.13.1
       cookie:
         specifier: ^1.0.2
         version: 1.0.2
@@ -432,6 +435,9 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  bootstrap-icons@1.13.1:
+    resolution: {integrity: sha512-ijombt4v6bv5CLeXvRWKy7CuM3TRTuPEuGaGKvTV5cz65rQSY8RQ2JcHt6b90cBBAC7s8fsf2EkQDldzCoXUjw==}
 
   bootstrap@5.3.7:
     resolution: {integrity: sha512-7KgiD8UHjfcPBHEpDNg+zGz8L3LqR3GVwqZiBRFX04a1BCArZOz1r2kjly2HQ0WokqTO0v1nF+QAt8dsW4lKlw==}
@@ -1919,6 +1925,8 @@ snapshots:
 
   balanced-match@1.0.2: {}
 
+  bootstrap-icons@1.13.1: {}
+
   bootstrap@5.3.7(@popperjs/core@2.11.8):
     dependencies:
       '@popperjs/core': 2.11.8
@@ -2172,7 +2180,7 @@ snapshots:
       eslint: 8.27.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 2.7.1(eslint-plugin-import@2.32.0(eslint@8.27.0))(eslint@8.27.0)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1)(eslint@8.27.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1(eslint-plugin-import@2.32.0(eslint@8.27.0))(eslint@8.27.0))(eslint@8.27.0)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.27.0)
       eslint-plugin-react: 7.37.5(eslint@8.27.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.27.0)
@@ -2194,7 +2202,7 @@ snapshots:
     dependencies:
       debug: 4.4.1
       eslint: 8.27.0
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1)(eslint@8.27.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1(eslint-plugin-import@2.32.0(eslint@8.27.0))(eslint@8.27.0))(eslint@8.27.0)
       glob: 7.2.3
       is-glob: 4.0.3
       resolve: 1.22.10
@@ -2213,7 +2221,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1)(eslint@8.27.0):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1(eslint-plugin-import@2.32.0(eslint@8.27.0))(eslint@8.27.0))(eslint@8.27.0):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9

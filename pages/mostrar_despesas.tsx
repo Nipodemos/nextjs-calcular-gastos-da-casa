@@ -1,11 +1,10 @@
-// pages/mostrar_despesas.tsx (ou onde estiver)
+
 
 import { useEffect, useState } from "react";
-import { Button, Col, Form, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
-import { IDespesa } from "@/types"; // Mantenha para o tipo
+import { Button, Card, Col, Form, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
+import { IDespesa } from "@/types";
 import { isArray } from "lodash";
 
-// 1. CORREÇÃO PRINCIPAL: As funções agora retornam Promise<boolean>
 interface MostrarDespesasProps {
   despesas: IDespesa[];
   onRemoverDespesa: (id: number) => Promise<boolean>;
@@ -28,13 +27,14 @@ export default function MostrarDespesas({
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
-  const [valorTotalDespesas, setValorTotalDespesas] = useState(0);
   const [showToastSuccess, setShowToastSuccess] = useState(false);
   const [formData, setFormData] = useState<FormDataType>({
     id: null,
     valor: 0,
     descricao: ''
   });
+
+  const totalDespesas = despesas.reduce((acc, despesa) => acc + despesa.valor, 0);
 
   const handleClose = () => setShowModal(false);
   const handleShow = (id: number | null) => {
@@ -51,31 +51,19 @@ export default function MostrarDespesas({
     setShowModal(true)
   };
 
-  useEffect(() => {
-    let valorTotal = 0;
-    if (despesas && isArray(despesas) && despesas.length > 0) {
-      despesas.forEach(item => valorTotal += item.valor)
-      setValorTotalDespesas(valorTotal)
-    }
-  },
-    [valorTotalDespesas, despesas])
-
-
   const handleSave = async () => {
     setIsLoading(true);
     let resultado = false;
-
     if (formData.id === null) {
       resultado = await onAdicionarDespesa(formData.valor, formData.descricao);
     } else {
       resultado = await onAlterarDespesa(formData.id, formData.valor, formData.descricao);
     }
-
-    if (!resultado) {
-      alert('Erro ao salvar despesa')
-    } else {
+    if (resultado) {
       handleClose();
       setShowToastSuccess(true);
+    } else {
+      alert('Erro ao salvar despesa');
     }
     setIsLoading(false);
   }
@@ -83,75 +71,77 @@ export default function MostrarDespesas({
   const handleDelete = async (id: number) => {
     setIsDeleting(id);
     const resultado = await onRemoverDespesa(id);
-    if (!resultado) {
-      alert('Erro ao excluir despesa')
+    if (resultado) {
+      setShowToastSuccess(true);
     } else {
-      setShowToastSuccess(true)
+      alert('Erro ao excluir despesa');
     }
     setIsDeleting(null);
   }
 
   const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
-
   return (
     <>
-      <Row style={{ alignItems: 'center' }}>
-        <Col>
-          <h1>Despesas</h1>
-        </Col>
-        <Col>
-          <h3>Total: {formatter.format(valorTotalDespesas)}</h3>
-        </Col>
-        <Col style={{ textAlign: 'right' }}>
-          <Button variant="success" className="mb-2" onClick={() => handleShow(null)}>Adicionar Despesa</Button>
-        </Col>
-      </Row>
+      <Card>
+        <Card.Header className="d-flex justify-content-between align-items-center">
+          <h4 className="mb-0">Despesas do Mês</h4>
+          <Button variant="success" onClick={() => handleShow(null)}>
+            <i className="bi bi-plus-lg me-2"></i>Adicionar Despesa
+          </Button>
+        </Card.Header>
+        <Card.Body className="p-0">
+          <Table striped bordered hover responsive className="mb-0">
+            <thead className="table-light">
+              <tr>
+                <th className="ps-3">Descrição</th>
+                <th className="text-end">Valor</th>
+                <th className="text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {despesas.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="text-center text-muted p-4">Nenhuma despesa cadastrada.</td>
+                </tr>
+              )}
+              {despesas.map(({ id, valor, descricao }) => (
+                <tr key={id}>
+                  <td className="ps-3 align-middle">{descricao}</td>
+                  <td className="text-end align-middle">{formatter.format(valor)}</td>
+                  <td className="text-center">
+                    <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShow(id)}>Editar</Button>
+                    <Button variant="outline-danger" size="sm" type="button" disabled={isDeleting === id} onClick={() => handleDelete(id)}>
+                      {isDeleting === id ? (
+                        <Spinner as="span" animation="border" size="sm" />
+                      ) : 'Excluir'}
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Card.Body>
+        <Card.Footer className="text-end">
+          <span className="me-2">Total:</span>
+          <span className="fw-bold fs-5">{formatter.format(totalDespesas)}</span>
+        </Card.Footer>
+      </Card>
 
-
-      <Table bordered>
-        <thead>
-          <tr>
-            <th>Valor</th>
-            <th>Descrição</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {despesas && despesas.map(({ id, valor, descricao }) => (
-            <tr key={id}>
-              <td>{formatter.format(valor)}</td>
-              <td>{descricao}</td>
-              <td>
-                <Button className="me-2" onClick={() => handleShow(id)} >Editar</Button>
-                <Button variant="danger" type="button" disabled={isDeleting === id} onClick={() => handleDelete(id)}>
-                  {isDeleting === id ? (
-                    <>
-                      <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />
-                      Excluindo...
-                    </>
-                  ) : 'Excluir'}
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      {/* O Modal e o ToastContainer continuam iguais */}
       <Modal show={showModal} onHide={handleClose}>
-        {/* ... seu modal ... */}
         <Modal.Header closeButton>
           <Modal.Title>{formData.id === null ? "Nova Despesa" : "Alterar Despesa"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3" controlId="formValor">
-              <Form.Label>Valor</Form.Label>
-              <Form.Control type="number" placeholder="Valor" value={formData.valor} onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })} onChange={(e) => setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))} />
+              <Form.Label>Valor (R$)</Form.Label>
+              <Form.Control type="number" placeholder="Ex: 150.50" value={formData.valor} onChange={(e) => setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))} />
             </Form.Group>
-
             <Form.Group controlId="formDescricao">
               <Form.Label>Descrição</Form.Label>
-              <Form.Control type="text" placeholder="Descrição" value={formData.descricao} onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))} />
+              <Form.Control type="text" placeholder="Ex: Conta de Luz" value={formData.descricao} onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))} />
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -162,10 +152,11 @@ export default function MostrarDespesas({
           </Button>
         </Modal.Footer>
       </Modal>
-      <ToastContainer position="top-end" className="p-3" style={{ zIndex: 1 }}>
+
+      <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
         <Toast bg='success' onClose={() => setShowToastSuccess(false)} show={showToastSuccess} delay={3000} autohide >
           <Toast.Header> <strong className="me-auto">Sucesso!</strong> </Toast.Header>
-          <Toast.Body className="text-white">Informações foram gravadas</Toast.Body>
+          <Toast.Body className="text-white">Operação realizada com sucesso.</Toast.Body>
         </Toast>
       </ToastContainer>
     </>

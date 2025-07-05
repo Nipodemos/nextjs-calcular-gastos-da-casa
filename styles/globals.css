@@ -1,3 +1,5 @@
+--- START OF FILE globals.css ---
+
 /* styles/globals.css */
 
 html,
@@ -8,9 +10,10 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
-/* Adiciona o gradiente suave ao fundo de todas as páginas */
+/* Um gradiente mais sutil e moderno */
 body {
-  background: linear-gradient(to right top, #f2f2f2, #e6e6e6, #d9d9d9);
+  background-color: #f8f9fa; /* Cor de fallback */
+  background-image: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   background-attachment: fixed;
 }
 
@@ -21,4 +24,10 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+/* Pequeno ajuste para garantir que os cards tenham um espaço consistente */
+.card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: none;
 }
