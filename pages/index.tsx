@@ -1,5 +1,3 @@
-
-
 // pages/index.tsx
 
 import { useState } from 'react';
@@ -14,9 +12,8 @@ import { IPessoa, IDespesa } from '@/types';
 import prisma from '../prisma/db';
 import { calcularDivisao } from '../lib/calculations';
 import * as api from '../lib/api';
-import { Alert, Card } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 
-// getServerSideProps continua exatamente igual. Está perfeito.
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const token = context.req.cookies.auth_token;
   const SECRET_KEY = process.env.JWT_SECRET;
@@ -80,7 +77,7 @@ export default function Home({
   const [pessoas, setPessoas] = useState<IPessoa[]>(pessoasProp);
   const [despesas, setDespesas] = useState<IDespesa[]>(despesasProp);
 
-  // As funções handle... continuam exatamente as mesmas.
+
   const handleAdicionarDespesa = async (valor: number, descricao: string) => {
     const novaDespesa = await api.adicionarDespesa(valor, descricao);
     if (novaDespesa) {
@@ -137,12 +134,10 @@ export default function Home({
   const totalDespesas = despesas.reduce((acc, despesa) => acc + despesa.valor, 0);
   const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
-  // Pega a porcentagem da primeira pessoa (todas são iguais) para o card de resumo
   const porcentagemContribuicao = divisaoCalculada.length > 0 ? (divisaoCalculada[0].valor / divisaoCalculada[0].salarioLiquido * 100) : 0;
 
   return (
     <Container fluid className="p-4">
-      {/* Título Principal do Dashboard */}
       <Row className="mb-4">
         <Col>
           <h1 className="fw-bold">Dashboard de Despesas da Casa</h1>
@@ -150,16 +145,15 @@ export default function Home({
         </Col>
       </Row>
 
-      {/* Cards de Resumo (KPIs) */}
       <Row className="mb-4">
-        <Col md={6}>
-          <Alert variant="primary">
+        <Col md={6} className="mb-3 mb-md-0">
+          <Alert variant="primary" className="h-100">
             <Alert.Heading>Total de Despesas</Alert.Heading>
             <p className="fs-2 fw-bold mb-0">{formatter.format(totalDespesas)}</p>
           </Alert>
         </Col>
         <Col md={6}>
-          <Alert variant="info">
+          <Alert variant="info" className="h-100">
             <Alert.Heading>Proporção de Contribuição</Alert.Heading>
             <p className="fs-2 fw-bold mb-0">{porcentagemContribuicao.toFixed(2)}%</p>
             <p className="mb-0">Cada pessoa está contribuindo com essa porcentagem do seu salário líquido.</p>
@@ -167,7 +161,6 @@ export default function Home({
         </Col>
       </Row>
 
-      {/* Conteúdo Principal */}
       <Row >
         <Col lg={7} className="mb-4 mb-lg-0">
           <MostrarDespesas

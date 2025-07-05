@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Card, ListGroup, Spinner, Modal, Form, Row, Toast, ToastContainer, Col, Badge } from "react-bootstrap";
+import { Button, Card, ListGroup, Spinner, Modal, Form, Row, Toast, ToastContainer, Col, Badge, Collapse } from "react-bootstrap";
 import { IPessoa } from "@/types";
 import { DivisaoCalculada } from "../lib/calculations";
 
@@ -37,6 +37,9 @@ export default function MostrarPessoas({
   const [showToastSuccess, setShowToastSuccess] = useState(false);
   const [formData, setFormData] = useState<FormDataType>(initialFormData);
 
+  // Estado para controlar qual card de detalhes está aberto
+  const [openCollapse, setOpenCollapse] = useState<Record<number, boolean>>({});
+
   const handleShow = (id: number | null) => {
     if (id) {
       const pessoa = pessoas.find((p) => p.id === id);
@@ -48,6 +51,14 @@ export default function MostrarPessoas({
   };
 
   const handleClose = () => setShowModal(false);
+
+  // Função para abrir/fechar os detalhes de uma pessoa específica
+  const toggleCollapse = (id: number) => {
+    setOpenCollapse(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
 
   const handleSave = async () => {
     setIsLoading(true);
@@ -79,6 +90,7 @@ export default function MostrarPessoas({
   };
 
   const formatacao = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  const formatacaoPorcentagem = new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 2 });
 
   return (
     <>
@@ -98,6 +110,7 @@ export default function MostrarPessoas({
             if (!valores) return null;
 
             const { salarioLiquido, valor, valorQueSobra, porcentagem } = valores;
+            const isCollapseOpen = !!openCollapse[pessoa.id];
 
             return (
               <Card className="mb-3" key={pessoa.id}>
@@ -120,14 +133,41 @@ export default function MostrarPessoas({
                     <span className="fw-bold text-success">{formatacao.format(valorQueSobra)}</span>
                   </ListGroup.Item>
                   <ListGroup.Item className="d-flex justify-content-between align-items-center text-muted">
-                    <span>Salário Líquido:</span>
-                    <span>{formatacao.format(salarioLiquido)}</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item className="d-flex justify-content-between align-items-center text-muted">
                     <span>Contribuição (% Renda):</span>
                     <Badge bg="secondary" pill>{(porcentagem * 100).toFixed(2)}%</Badge>
                   </ListGroup.Item>
                 </ListGroup>
+
+                <Collapse in={isCollapseOpen}>
+                  <div id={`collapse-details-${pessoa.id}`}>
+                    <ListGroup variant="flush">
+                      <ListGroup.Item className="d-flex justify-content-between bg-light">
+                        <strong>Dados de Cálculo</strong>
+                      </ListGroup.Item>
+                      <ListGroup.Item className="d-flex justify-content-between text-muted"><span>Salário Bruto:</span><span>{formatacao.format(pessoa.salario)}</span></ListGroup.Item>
+                      <ListGroup.Item className="d-flex justify-content-between text-muted"><span>Vale Alimentação:</span><span>{formatacao.format(pessoa.valorAlimentacao)}</span></ListGroup.Item>
+                      <ListGroup.Item className="d-flex justify-content-between text-muted"><span>Salário Líquido:</span><span>{formatacao.format(salarioLiquido)}</span></ListGroup.Item>
+                      <ListGroup.Item className="d-flex justify-content-between text-muted"><span>Taxa INSS:</span><span>{formatacaoPorcentagem.format(pessoa.porcentagemTaxaInss / 100)}</span></ListGroup.Item>
+                      <ListGroup.Item className="d-flex justify-content-between text-muted"><span>Taxa Alimentação:</span><span>{formatacaoPorcentagem.format(pessoa.porcentagemTaxaAlimentacao / 100)}</span></ListGroup.Item>
+                      <ListGroup.Item className="d-flex justify-content-between text-muted"><span>Taxa Passagem:</span><span>{formatacaoPorcentagem.format(pessoa.porcentagemTaxaPassagem / 100)}</span></ListGroup.Item>
+                    </ListGroup>
+                  </div>
+                </Collapse>
+
+                <Card.Footer className="text-center">
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="text-decoration-none"
+                    onClick={() => toggleCollapse(pessoa.id)}
+                    aria-controls={`collapse-details-${pessoa.id}`}
+                    aria-expanded={isCollapseOpen}
+                  >
+                    {isCollapseOpen ? 'Ocultar Detalhes' : 'Ver Detalhes'}
+                    <i className={`bi ${isCollapseOpen ? 'bi-chevron-up' : 'bi-chevron-down'} ms-2`}></i>
+                  </Button>
+                </Card.Footer>
+
               </Card>
             );
           })}
@@ -159,7 +199,6 @@ export default function MostrarPessoas({
                 </Form.Group>
               </Col>
             </Row>
-            {/* Adicionei os campos que faltavam no formulário */}
             <Row>
               <Col><Form.Group className="mb-2" controlId="formInss"><Form.Label>Taxa INSS (%)</Form.Label><Form.Control type="number" value={formData.porcentagemTaxaInss} onChange={(e) => setFormData({ ...formData, porcentagemTaxaInss: Number(e.target.value) })} /></Form.Group></Col>
               <Col><Form.Group className="mb-2" controlId="formTaxaAlim"><Form.Label>Taxa Aliment. (%)</Form.Label><Form.Control type="number" value={formData.porcentagemTaxaAlimentacao} onChange={(e) => setFormData({ ...formData, porcentagemTaxaAlimentacao: Number(e.target.value) })} /></Form.Group></Col>
