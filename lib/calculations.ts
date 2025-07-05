@@ -57,8 +57,7 @@ export function calcularDivisao(
 }
 
 // As funções auxiliares continuam as mesmas
-function getSalarioLiquido(pessoa: IPessoa) {
-  // ... (código idêntico ao que você tinha)
+function getSalarioLiquido(pessoa: IPessoa): number {
   let valorTaxaPassagem = getValorTaxaPassagem(pessoa);
   let valorTaxaAlimentacao = getValorTaxaAlimentacao(pessoa);
   let valorTaxaInss = getValorTaxaInss(pessoa);

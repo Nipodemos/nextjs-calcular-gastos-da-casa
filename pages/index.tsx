@@ -41,12 +41,30 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     verify(token, SECRET_KEY);
 
     let pessoasProp = await prisma.pessoa.findMany({ orderBy: { nome: 'asc' } });
+    let novoPessoasProp = pessoasProp.map((pessoa) => {
+      return {
+        ...pessoa,
+        salario: pessoa.salario.toNumber(),
+        valorAlimentacao: pessoa.valorAlimentacao.toNumber(),
+        porcentagemTaxaInss: pessoa.porcentagemTaxaInss.toNumber(),
+        porcentagemTaxaAlimentacao: pessoa.porcentagemTaxaAlimentacao.toNumber(),
+        porcentagemTaxaPassagem: pessoa.porcentagemTaxaPassagem.toNumber(),
+      }
+    })
+
     let despesasProp = await prisma.despesa.findMany({ orderBy: { descricao: 'asc' } });
+    let novoDespesasProp = despesasProp.map((despesa) => {
+      return {
+        ...despesa,
+        valor: despesa.valor.toNumber(),
+      }
+    })
+
 
     return {
       props: {
-        pessoasProp: JSON.parse(JSON.stringify(pessoasProp)),
-        despesasProp: JSON.parse(JSON.stringify(despesasProp)),
+        pessoasProp: novoPessoasProp,
+        despesasProp: novoDespesasProp,
       }
     }
   } catch (error) {
