@@ -10,15 +10,20 @@ interface MostrarDivisaoProps {
 }
 
 export default function MostrarDivisao({ divisao }: MostrarDivisaoProps) {
-  // 3. REMOVA A LINHA DA STORE! A variável 'divisao' agora vem das props.
-  // const valoresPorPessoa = useValorPorPessoaStore((state) => state);
 
   const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  const formatterPorcentagem = new Intl.NumberFormat('pt-BR', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  let porcentagemDoSalarioPaga = formatterPorcentagem.format(divisao[0].valor / divisao[0].salarioLiquido * 100);
+
 
   return (
     <>
-      <h1 className="mb-5">Divisão</h1>
-      {/* 4. USE A PROP DIRETAMENTE */}
+      <h1>Divisão</h1>
+      <p>Obs: Todos estão dando {porcentagemDoSalarioPaga}% do salário para casa</p>
       {divisao.map(({ nomePessoa, valor, valorQueSobra, porcentagem }) =>
         <Card className="mb-3" key={nomePessoa} style={{ width: '15rem' }}>
           <Card.Body>

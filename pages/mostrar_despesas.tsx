@@ -1,7 +1,7 @@
 // pages/mostrar_despesas.tsx (ou onde estiver)
 
-import { useState } from "react";
-import { Button, Form, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Col, Form, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
 import { IDespesa } from "@/types"; // Mantenha para o tipo
 
 // 1. CORREÇÃO PRINCIPAL: As funções agora retornam Promise<boolean>
@@ -27,6 +27,7 @@ export default function MostrarDespesas({
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
+  const [valorTotalDespesas, setValorTotalDespesas] = useState(0);
   const [showToastSuccess, setShowToastSuccess] = useState(false);
   const [formData, setFormData] = useState<FormDataType>({
     id: null,
@@ -48,6 +49,13 @@ export default function MostrarDespesas({
     }
     setShowModal(true)
   };
+
+  useEffect(() => {
+    let valorTotal = 0;
+    despesas.forEach(item => valorTotal += item.valor)
+    setValorTotalDespesas(valorTotal)
+  },
+    [valorTotalDespesas, despesas])
 
   // 2. NENHUMA MUDANÇA NECESSÁRIA AQUI. Agora está correto com os tipos das props.
   const handleSave = async () => {
@@ -80,13 +88,24 @@ export default function MostrarDespesas({
     setIsDeleting(null);
   }
 
-  const formatacao = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
   // O JSX continua o mesmo.
   return (
     <>
-      <h1>Despesas</h1>
-      <Button variant="success" className="mb-2" onClick={() => handleShow(null)}>Adicionar Despesa</Button>
+      <Row style={{ alignItems: 'center' }}>
+        <Col>
+          <h1>Despesas</h1>
+        </Col>
+        <Col>
+          <h3>Total: {formatter.format(valorTotalDespesas)}</h3>
+        </Col>
+        <Col style={{ textAlign: 'right' }}>
+          <Button variant="success" className="mb-2" onClick={() => handleShow(null)}>Adicionar Despesa</Button>
+        </Col>
+      </Row>
+
+
       <Table bordered>
         {/* ... sua tabela ... */}
         <thead>
@@ -99,7 +118,7 @@ export default function MostrarDespesas({
         <tbody>
           {despesas.map(({ id, valor, descricao }) => (
             <tr key={id}>
-              <td>{formatacao.format(valor)}</td>
+              <td>{formatter.format(valor)}</td>
               <td>{descricao}</td>
               <td>
                 <Button className="me-2" onClick={() => handleShow(id)} >Editar</Button>
