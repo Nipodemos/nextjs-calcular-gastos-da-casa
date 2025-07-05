@@ -59,7 +59,7 @@ importers:
         version: 9.0.10
       '@types/lodash':
         specifier: ^4.14.195
-        version: 4.17.19
+        version: 4.17.20
       '@types/node':
         specifier: 18.11.9
         version: 18.11.9
@@ -284,8 +284,8 @@ packages:
   '@types/jsonwebtoken@9.0.10':
     resolution: {integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==}
 
-  '@types/lodash@4.17.19':
-    resolution: {integrity: sha512-NYqRyg/hIQrYPT9lbOeYc3kIRabJDn/k4qQHIXUpx88CBDww2fD15Sg5kbXlW86zm2XEW4g0QxkTI3/Kfkc7xQ==}
+  '@types/lodash@4.17.20':
+    resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
@@ -1745,7 +1745,7 @@ snapshots:
       '@types/ms': 2.1.0
       '@types/node': 18.11.9
 
-  '@types/lodash@4.17.19': {}
+  '@types/lodash@4.17.20': {}
 
   '@types/ms@2.1.0': {}
 
@@ -2172,7 +2172,7 @@ snapshots:
       eslint: 8.27.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 2.7.1(eslint-plugin-import@2.32.0(eslint@8.27.0))(eslint@8.27.0)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1(eslint-plugin-import@2.32.0(eslint@8.27.0))(eslint@8.27.0))(eslint@8.27.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1)(eslint@8.27.0)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.27.0)
       eslint-plugin-react: 7.37.5(eslint@8.27.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.27.0)
@@ -2194,7 +2194,7 @@ snapshots:
     dependencies:
       debug: 4.4.1
       eslint: 8.27.0
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1(eslint-plugin-import@2.32.0(eslint@8.27.0))(eslint@8.27.0))(eslint@8.27.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1)(eslint@8.27.0)
       glob: 7.2.3
       is-glob: 4.0.3
       resolve: 1.22.10
@@ -2213,7 +2213,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1(eslint-plugin-import@2.32.0(eslint@8.27.0))(eslint@8.27.0))(eslint@8.27.0):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@5.62.0(eslint@8.27.0)(typescript@4.8.4))(eslint-import-resolver-typescript@2.7.1)(eslint@8.27.0):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
