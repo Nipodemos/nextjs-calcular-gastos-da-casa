@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
 import { IDespesa } from "@/types"; // Mantenha para o tipo
+import { isArray } from "lodash";
 
 // 1. CORREÇÃO PRINCIPAL: As funções agora retornam Promise<boolean>
 interface MostrarDespesasProps {
@@ -52,12 +53,14 @@ export default function MostrarDespesas({
 
   useEffect(() => {
     let valorTotal = 0;
-    despesas.forEach(item => valorTotal += item.valor)
-    setValorTotalDespesas(valorTotal)
+    if (despesas && isArray(despesas) && despesas.length > 0) {
+      despesas.forEach(item => valorTotal += item.valor)
+      setValorTotalDespesas(valorTotal)
+    }
   },
     [valorTotalDespesas, despesas])
 
-  // 2. NENHUMA MUDANÇA NECESSÁRIA AQUI. Agora está correto com os tipos das props.
+
   const handleSave = async () => {
     setIsLoading(true);
     let resultado = false;
@@ -90,7 +93,7 @@ export default function MostrarDespesas({
 
   const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
-  // O JSX continua o mesmo.
+
   return (
     <>
       <Row style={{ alignItems: 'center' }}>
@@ -107,7 +110,6 @@ export default function MostrarDespesas({
 
 
       <Table bordered>
-        {/* ... sua tabela ... */}
         <thead>
           <tr>
             <th>Valor</th>
@@ -116,7 +118,7 @@ export default function MostrarDespesas({
           </tr>
         </thead>
         <tbody>
-          {despesas.map(({ id, valor, descricao }) => (
+          {despesas && despesas.map(({ id, valor, descricao }) => (
             <tr key={id}>
               <td>{formatter.format(valor)}</td>
               <td>{descricao}</td>

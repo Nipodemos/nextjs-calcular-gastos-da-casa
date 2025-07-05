@@ -1,30 +1,36 @@
-// components/mostrar_divisao.tsx
-
 import { Card, ListGroup } from "react-bootstrap";
-// 1. IMPORTE O TIPO DO DADO QUE ELE VAI RECEBER
 import { DivisaoCalculada } from "../lib/calculations";
+import { useEffect, useState } from "react";
+import { isArray } from "lodash";
 
-// 2. DEFINA AS PROPS DO COMPONENTE
 interface MostrarDivisaoProps {
   divisao: DivisaoCalculada[];
 }
 
 export default function MostrarDivisao({ divisao }: MostrarDivisaoProps) {
+  let [porcentagemDoSalarioPaga, setPorcentagemDoSalarioPaga] = useState('');
 
   const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-  const formatterPorcentagem = new Intl.NumberFormat('pt-BR', {
-    style: 'decimal',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-  let porcentagemDoSalarioPaga = formatterPorcentagem.format(divisao[0].valor / divisao[0].salarioLiquido * 100);
+
+
+  useEffect(() => {
+    if (divisao && isArray(divisao) && divisao.length > 0) {
+      const formatterPorcentagem = new Intl.NumberFormat('pt-BR', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      setPorcentagemDoSalarioPaga(formatterPorcentagem.format(divisao[0].valor / divisao[0].salarioLiquido * 100));
+
+    }
+  }, [divisao])
 
 
   return (
     <>
       <h1>Divisão</h1>
       <p>Obs: Todos estão dando {porcentagemDoSalarioPaga}% do salário para casa</p>
-      {divisao.map(({ nomePessoa, valor, valorQueSobra, porcentagem }) =>
+      {divisao && divisao.map(({ nomePessoa, valor, valorQueSobra, porcentagem }) =>
         <Card className="mb-3" key={nomePessoa} style={{ width: '15rem' }}>
           <Card.Body>
             <Card.Title>{nomePessoa}</Card.Title>

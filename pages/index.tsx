@@ -69,8 +69,6 @@ export default function Home({
   pessoasProp,
   despesasProp
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-
-  // 2. GERENCIE O ESTADO AQUI, USANDO AS PROPS DO SERVIDOR COMO VALOR INICIAL
   const [pessoas, setPessoas] = useState<IPessoa[]>(pessoasProp);
   const [despesas, setDespesas] = useState<IDespesa[]>(despesasProp);
 
@@ -126,15 +124,12 @@ export default function Home({
     return false;
   }
 
-
-  // 4. O CÁLCULO DA DIVISÃO AGORA USA O ESTADO LOCAL, PARA SER REATIVO
   const divisaoCalculada = calcularDivisao(pessoas, despesas);
 
   return (
     <Container fluid >
       <Row >
         <Col sm={12} md={6}>
-          {/* 5. PASSE O ESTADO E OS HANDLERS VIA PROPS */}
           <MostrarDespesas
             despesas={despesas}
             onAdicionarDespesa={handleAdicionarDespesa}
@@ -153,7 +148,7 @@ export default function Home({
                 pessoas={pessoas}
                 divisaoCalculada={divisaoCalculada}
                 onAdicionarPessoa={handleAdicionarPessoa}
-                onAlterarPessoa={handleAdicionarPessoa}
+                onAlterarPessoa={handleAlterarPessoa}
                 onRemoverPessoa={handleRemoverPessoa}
               />
             </Col>

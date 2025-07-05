@@ -94,7 +94,7 @@ export default function MostrarPessoas({
     <div>
       <h1>Salários</h1>
       <Button variant="success" className="mb-2" onClick={() => handleShow(null)}>Adicionar Pessoa</Button>
-      {pessoas.map((pessoa) => {
+      {pessoas && pessoas.map((pessoa) => {
         // 3. USE A PROP 'divisaoCalculada' EM VEZ DA STORE
         const valores = divisaoCalculada.find((v) => v.nomePessoa === pessoa.nome);
         if (!valores) return null; // Retorna nulo se não encontrar (mais seguro)
