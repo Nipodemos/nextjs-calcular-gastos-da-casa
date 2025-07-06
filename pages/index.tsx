@@ -1,18 +1,17 @@
-// pages/index.tsx
 
+import { IDespesa, IPessoa } from '@/types';
+import { verify } from 'jsonwebtoken';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useState } from 'react';
-import MostrarDespesas from './mostrar_despesas';
-import MostrarPessoas from './mostrar_pessoas';
+import { Alert } from 'react-bootstrap';
+import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import { verify } from 'jsonwebtoken';
-import { IPessoa, IDespesa } from '@/types';
-import prisma from '../prisma/db';
-import { calcularDivisao } from '../lib/calculations';
 import * as api from '../lib/api';
-import { Alert } from 'react-bootstrap';
+import { calcularDivisao } from '../lib/calculations';
+import prisma from '../prisma/db';
+import MostrarDespesas from '../components/mostrar_despesas';
+import MostrarPessoas from '../components/mostrar_pessoas';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const token = context.req.cookies.auth_token;
@@ -74,8 +73,8 @@ export default function Home({
   pessoasProp,
   despesasProp
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [pessoas, setPessoas] = useState<IPessoa[]>(pessoasProp);
-  const [despesas, setDespesas] = useState<IDespesa[]>(despesasProp);
+  const [pessoas, setPessoas] = useState<IPessoa[]>(pessoasProp ?? []);
+  const [despesas, setDespesas] = useState<IDespesa[]>(despesasProp ?? []);
 
 
   const handleAdicionarDespesa = async (valor: number, descricao: string) => {
