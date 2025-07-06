@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Button, Card, ListGroup, Spinner, Modal, Form, Row, Toast, ToastContainer, Col, Badge, Collapse } from "react-bootstrap";
 import { IPessoa } from "@/types";
+import { useState } from "react";
+import { Badge, Button, Card, Col, Collapse, Form, ListGroup, Modal, Row, Spinner, Toast, ToastContainer } from "react-bootstrap";
 import { DivisaoCalculada } from "../lib/calculations";
 
 interface MostrarPessoasProps {
