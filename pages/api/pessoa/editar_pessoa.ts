@@ -24,7 +24,17 @@ const handler: NextApiHandler = async (req, res) => {
       porcentagemTaxaPassagem,
     },
   });
-  res.status(200).json(pessoa);
+
+  const pessoaFormatada = {
+    ...pessoa,
+    salario: pessoa.salario.toNumber(),
+    valorAlimentacao: pessoa.valorAlimentacao.toNumber(),
+    porcentagemTaxaInss: pessoa.porcentagemTaxaInss.toNumber(),
+    porcentagemTaxaAlimentacao: pessoa.porcentagemTaxaAlimentacao.toNumber(),
+    porcentagemTaxaPassagem: pessoa.porcentagemTaxaPassagem.toNumber(),
+  };
+
+  res.status(200).json(pessoaFormatada);
 };
 
 export default handler;

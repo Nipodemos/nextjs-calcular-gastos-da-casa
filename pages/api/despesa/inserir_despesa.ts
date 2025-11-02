@@ -9,6 +9,12 @@ const handler: NextApiHandler = async (req, res) => {
       valor,
     },
   });
-  res.status(200).json(despesa);
+
+  const despesaFormatada = {
+    ...despesa,
+    valor: despesa.valor.toNumber(),
+  };
+
+  res.status(200).json(despesaFormatada);
 };
 export default handler;
