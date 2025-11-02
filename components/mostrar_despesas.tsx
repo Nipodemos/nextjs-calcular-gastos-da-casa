@@ -2,18 +2,19 @@
 
 import { IDespesa } from "@/types";
 import { useState } from "react";
-import { Button, Card, Form, Modal, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
+import { Button, Card, Form, Modal, Spinner, Table } from "react-bootstrap";
 
 interface MostrarDespesasProps {
   despesas: IDespesa[];
   onRemoverDespesa: (id: number) => Promise<boolean>;
   onAlterarDespesa: (id: number, valor: number, descricao: string) => Promise<boolean>;
   onAdicionarDespesa: (valor: number, descricao: string) => Promise<boolean>;
+  onShowToastSuccess: () => void;
 }
 
 type FormDataType = {
   id: number | null;
-  valor: number;
+  valor: number | string;
   descricao: string;
 }
 
@@ -21,17 +22,21 @@ export default function MostrarDespesas({
   despesas,
   onRemoverDespesa,
   onAlterarDespesa,
-  onAdicionarDespesa
+  onAdicionarDespesa,
+  onShowToastSuccess
 }: MostrarDespesasProps) {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
-  const [showToastSuccess, setShowToastSuccess] = useState(false);
+  // const [showToastSuccess, setShowToastSuccess] = useState(false);
   const [formData, setFormData] = useState<FormDataType>({
     id: null,
     valor: 0,
     descricao: ''
   });
+
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [despesaToDeleteId, setDespesaToDeleteId] = useState<number | null>(null);
 
   const totalDespesas = despesas.reduce((acc, despesa) => acc + despesa.valor, 0);
 
@@ -50,17 +55,46 @@ export default function MostrarDespesas({
     setShowModal(true)
   };
 
+  const handleShowDeleteConfirm = (id: number) => {
+    setDespesaToDeleteId(id);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleCloseDeleteConfirm = () => {
+    setDespesaToDeleteId(null);
+    setShowDeleteConfirmModal(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (despesaToDeleteId !== null) {
+      setIsDeleting(despesaToDeleteId);
+      const resultado = await onRemoverDespesa(despesaToDeleteId);
+      if (resultado) {
+        // setShowToastSuccess(true);
+        onShowToastSuccess();
+      } else {
+        alert('Erro ao excluir despesa');
+      }
+      setIsDeleting(null);
+      handleCloseDeleteConfirm();
+    }
+  };
+
   const handleSave = async () => {
     setIsLoading(true);
     let resultado = false;
+
+    const valorParaSalvar = Number(formData.valor);
+
     if (formData.id === null) {
-      resultado = await onAdicionarDespesa(formData.valor, formData.descricao);
+      resultado = await onAdicionarDespesa(valorParaSalvar, formData.descricao);
     } else {
-      resultado = await onAlterarDespesa(formData.id, formData.valor, formData.descricao);
+      resultado = await onAlterarDespesa(formData.id, valorParaSalvar, formData.descricao);
     }
     if (resultado) {
       handleClose();
-      setShowToastSuccess(true);
+      // setShowToastSuccess(true);
+      onShowToastSuccess();
     } else {
       alert('Erro ao salvar despesa');
     }
@@ -71,7 +105,8 @@ export default function MostrarDespesas({
     setIsDeleting(id);
     const resultado = await onRemoverDespesa(id);
     if (resultado) {
-      setShowToastSuccess(true);
+      // setShowToastSuccess(true);
+      onShowToastSuccess();
     } else {
       alert('Erro ao excluir despesa');
     }
@@ -107,10 +142,10 @@ export default function MostrarDespesas({
               {despesas.map(({ id, valor, descricao }) => (
                 <tr key={id}>
                   <td className="ps-3 align-middle">{descricao}</td>
-                  <td className="text-end align-middle">{formatter.format(valor)}</td>
+                  <td className={`text-end align-middle ${valor < 0 ? 'text-success' : 'text-danger'}`}>{formatter.format(valor  * -1)}</td>
                   <td className="text-center">
                     <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShow(id)}>Editar</Button>
-                    <Button variant="outline-danger" size="sm" type="button" disabled={isDeleting === id} onClick={() => handleDelete(id)}>
+                    <Button variant="outline-danger" size="sm" type="button" disabled={isDeleting === id} onClick={() => handleShowDeleteConfirm(id)}>
                       {isDeleting === id ? (
                         <Spinner as="span" animation="border" size="sm" />
                       ) : 'Excluir'}
@@ -136,7 +171,19 @@ export default function MostrarDespesas({
           <Form>
             <Form.Group className="mb-3" controlId="formValor">
               <Form.Label>Valor (R$)</Form.Label>
-              <Form.Control type="number" placeholder="Ex: 150.50" value={formData.valor} onChange={(e) => setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))} />
+              <Form.Control
+                type="number"
+                placeholder="Ex: 150.50"
+                value={formData.valor}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || value === '-') {
+                    setFormData((prev) => ({ ...prev, valor: value }));
+                  } else {
+                    setFormData((prev) => ({ ...prev, valor: Number(value) }));
+                  }
+                }}
+              />
             </Form.Group>
             <Form.Group controlId="formDescricao">
               <Form.Label>Descrição</Form.Label>
@@ -152,12 +199,27 @@ export default function MostrarDespesas({
         </Modal.Footer>
       </Modal>
 
-      <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
+      <Modal show={showDeleteConfirmModal} onHide={handleCloseDeleteConfirm}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Exclusão</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Tem certeza de que deseja excluir esta despesa?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDeleteConfirm}>Cancelar</Button>
+          <Button variant="danger" onClick={handleConfirmDelete} disabled={isDeleting !== null}>
+            {isDeleting !== null ? <Spinner as="span" animation="border" size="sm" /> : 'Excluir'}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
         <Toast bg='success' onClose={() => setShowToastSuccess(false)} show={showToastSuccess} delay={3000} autohide >
           <Toast.Header> <strong className="me-auto">Sucesso!</strong> </Toast.Header>
           <Toast.Body className="text-white">Operação realizada com sucesso.</Toast.Body>
         </Toast>
-      </ToastContainer>
+      </ToastContainer> */}
     </>
   )
 }

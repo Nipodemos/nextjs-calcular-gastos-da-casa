@@ -1,6 +1,6 @@
 import { IPessoa } from "@/types";
 import { useState } from "react";
-import { Badge, Button, Card, Col, Collapse, Form, ListGroup, Modal, Row, Spinner, Toast, ToastContainer } from "react-bootstrap";
+import { Badge, Button, Card, Col, Collapse, Form, ListGroup, Modal, Row, Spinner } from "react-bootstrap";
 import { DivisaoCalculada } from "../lib/calculations";
 
 interface MostrarPessoasProps {
@@ -9,6 +9,7 @@ interface MostrarPessoasProps {
   onAdicionarPessoa: (data: Omit<IPessoa, 'id'>) => Promise<boolean>;
   onAlterarPessoa: (data: IPessoa) => Promise<boolean>;
   onRemoverPessoa: (id: number) => Promise<boolean>;
+  onShowToastSuccess: () => void;
 }
 
 type FormDataType = Omit<IPessoa, 'id'> & { id: number | null };
@@ -28,14 +29,18 @@ export default function MostrarPessoas({
   divisaoCalculada,
   onAdicionarPessoa,
   onAlterarPessoa,
-  onRemoverPessoa
+  onRemoverPessoa,
+  onShowToastSuccess
 }: MostrarPessoasProps) {
 
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
-  const [showToastSuccess, setShowToastSuccess] = useState(false);
+  // const [showToastSuccess, setShowToastSuccess] = useState(false);
   const [formData, setFormData] = useState<FormDataType>(initialFormData);
+
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [pessoaToDeleteId, setPessoaToDeleteId] = useState<number | null>(null);
 
   // Estado para controlar qual card de detalhes está aberto
   const [openCollapse, setOpenCollapse] = useState<Record<number, boolean>>({});
@@ -51,6 +56,31 @@ export default function MostrarPessoas({
   };
 
   const handleClose = () => setShowModal(false);
+
+  const handleShowDeleteConfirm = (id: number) => {
+    setPessoaToDeleteId(id);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleCloseDeleteConfirm = () => {
+    setPessoaToDeleteId(null);
+    setShowDeleteConfirmModal(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (pessoaToDeleteId !== null) {
+      setIsDeleting(pessoaToDeleteId);
+      const resultado = await onRemoverPessoa(pessoaToDeleteId);
+      if (resultado) {
+        // setShowToastSuccess(true);
+        onShowToastSuccess();
+      } else {
+        alert('Erro ao excluir a pessoa');
+      }
+      setIsDeleting(null);
+      handleCloseDeleteConfirm();
+    }
+  };
 
   // Função para abrir/fechar os detalhes de uma pessoa específica
   const toggleCollapse = (id: number) => {
@@ -71,7 +101,8 @@ export default function MostrarPessoas({
     }
     if (resultado) {
       handleClose();
-      setShowToastSuccess(true);
+      // setShowToastSuccess(true);
+      onShowToastSuccess();
     } else {
       alert('Erro ao salvar os dados da pessoa');
     }
@@ -82,7 +113,8 @@ export default function MostrarPessoas({
     setIsDeleting(id);
     const resultado = await onRemoverPessoa(id);
     if (resultado) {
-      setShowToastSuccess(true);
+      // setShowToastSuccess(true);
+      onShowToastSuccess();
     } else {
       alert('Erro ao excluir a pessoa');
     }
@@ -118,7 +150,7 @@ export default function MostrarPessoas({
                   <span className="fw-bold fs-5">{pessoa.nome}</span>
                   <div>
                     <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShow(pessoa.id)}>Editar</Button>
-                    <Button variant="outline-danger" size="sm" disabled={isDeleting === pessoa.id} onClick={() => handleDelete(pessoa.id)}>
+                    <Button variant="outline-danger" size="sm" disabled={isDeleting === pessoa.id} onClick={() => handleShowDeleteConfirm(pessoa.id)}>
                       {isDeleting === pessoa.id ? <Spinner as="span" animation="border" size="sm" /> : 'Excluir'}
                     </Button>
                   </div>
@@ -214,12 +246,27 @@ export default function MostrarPessoas({
         </Modal.Footer>
       </Modal>
 
-      <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
+      <Modal show={showDeleteConfirmModal} onHide={handleCloseDeleteConfirm}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Exclusão</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Tem certeza de que deseja excluir esta pessoa?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDeleteConfirm}>Cancelar</Button>
+          <Button variant="danger" onClick={handleConfirmDelete} disabled={isDeleting !== null}>
+            {isDeleting !== null ? <Spinner as="span" animation="border" size="sm" /> : 'Excluir'}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
         <Toast bg='success' onClose={() => setShowToastSuccess(false)} show={showToastSuccess} delay={3000} autohide >
           <Toast.Header> <strong className="me-auto">Sucesso!</strong> </Toast.Header>
           <Toast.Body className="text-white">Operação realizada com sucesso.</Toast.Body>
         </Toast>
-      </ToastContainer>
+      </ToastContainer> */}
     </>
   );
 }
