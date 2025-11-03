@@ -8,7 +8,7 @@ import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import * as api from '../lib/api';
-import { calcularDivisao } from '../lib/calculations';
+import { calcularDivisao, getSalarioLiquido } from '../lib/calculations';
 import prisma from '../prisma/db';
 import MostrarDespesas from '../components/mostrar_despesas';
 import MostrarPessoas from '../components/mostrar_pessoas';
@@ -151,15 +151,18 @@ export default function Home({
     const anoQuatroDigitos = dataAtual.getFullYear();
 
     messageParts.push(`*Resumo de Despesas da Casa - ${mesPorExtenso}/${anoQuatroDigitos}*\n`);
-
+    
     divisaoCalculada.forEach(item => {
       const valorFormatado = formatter.format(item.valor);
       messageParts.push(`*${item.nomePessoa}*: ${valorFormatado}`);
     });
 
-    const totalPessoas = divisaoCalculada.reduce((acc, item) => acc + item.valor, 0);
+    const totalReceitas = pessoas.reduce((acc, pessoa) => {
+      const salarioLiquido = getSalarioLiquido(pessoa);
+      return acc + salarioLiquido;
+    }, 0);
     messageParts.push(`\n*Despesas da Casa*: ${formatter.format(totalDespesas)}`);
-    messageParts.push(`\n*Receita da Casa (Total Pessoas)*: ${formatter.format(totalPessoas)}`);
+    messageParts.push(`\n*Receita da Casa (Total Pessoas)*: ${formatter.format(totalReceitas)}`);
 
     return messageParts.join('\n');
   };
