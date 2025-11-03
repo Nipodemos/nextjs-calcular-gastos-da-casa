@@ -157,6 +157,10 @@ export default function Home({
       messageParts.push(`*${item.nomePessoa}*: ${valorFormatado}`);
     });
 
+    const totalPessoas = divisaoCalculada.reduce((acc, item) => acc + item.valor, 0);
+    messageParts.push(`\n*Despesas da Casa*: ${formatter.format(totalDespesas)}`);
+    messageParts.push(`\n*Receita da Casa (Total Pessoas)*: ${formatter.format(totalPessoas)}`);
+
     return messageParts.join('\n');
   };
 
